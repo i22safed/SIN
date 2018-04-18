@@ -1,0 +1,163 @@
+;;;   Wumpus Map definition file
+
+;;; Place features of map
+
+(deffacts easymap
+	(x-bound 8)
+	(y-bound 8)
+	(at pit 0 0)
+	(at pit 1 4)
+	(at pit 2 7)
+	(at pit 4 1)
+	(at pit 5 4)
+	(at pit 7 2)
+	(at wumpus 3 6))
+
+;;; User feedback
+
+(defrule breeze
+	(declare (salience 20))
+	(at agent ?x ?y)
+	(or (at pit =(- ?x 1) ?y)
+	    (at pit =(+ ?x 1) ?y)
+	    (at pit ?x =(- ?y 1))
+	    (at pit ?x =(+ ?y 1)))
+	=>
+	(assert (breezy ?x ?y))
+	(printout t "There is a breeze" t))
+
+(defrule smell
+	(declare (salience 20))
+	(at agent ?x ?y)
+	(or (at wumpus =(- ?x 1) ?y)
+	    (at wumpus =(+ ?x 1) ?y)
+	    (at wumpus ?x =(- ?y 1))
+	    (at wumpus ?x =(+ ?y 1)))
+	=>
+	(assert (smelly ?x ?y))
+	(printout t "This spot smells" t))
+
+(defrule safe
+	(at agent ?x ?y)
+	(not (smelly ?x ?y))
+	(not (breezy ?x ?y))
+	=>
+	(printout t "This spot seems quiet." t))
+
+(defrule dead-pit
+	(at agent ?x ?y)
+	(at pit ?x ?y)
+	=>
+	(printout t "You fell into a pit. You die." t)
+	(halt))
+
+(defrule dead-wumpus
+	(at agent ?x ?y)
+	(at wumpus ?x ?y)
+	=>
+	(printout t "The wumpus ate you. HA ha!" t)
+	(halt))
+
+;;; Process agent movement
+
+(defrule move-north
+	?p <- (action move n)
+	?q <- (at agent ?x ?y)
+	(test (> ?y 0)) 	; To make sure we don't move off the map
+	=>
+	(if (> ?y 0) then
+	    (printout t "Moving North" t)
+	    (assert (at agent ?x (- ?y 1)))	; Move the agent's position
+	    (retract ?q)	; Eliminate the agent's old position
+	    (retract ?p)	; Eliminate the command
+	    else (printout t "Invalid move" t)))
+
+(defrule move-south
+	?p <- (action move s)
+	?q <- (at agent ?x ?y)
+	(y-bound ?z)
+	=>
+	(if (< ?y ?z) then
+	    (printout t "Moving South" t)
+	    (assert (at agent ?x (+ ?y 1)))	; Move the agent's position
+	    (retract ?q)	; Eliminate the agent's old position
+	    (retract ?p)	; Eliminate the command
+	    else (printout t "Invalid move" t)))
+
+(defrule move-west
+	?p <- (action move w)
+	?q <- (at agent ?x ?y)
+	=>
+	(if (> ?x 0) then
+	    (printout t "Moving West" t)
+	    (assert (at agent (- ?x 1) ?y))	; Move the agent's position
+	    (retract ?q)	; Eliminate the agent's old position
+	    (retract ?p)	; Eliminate the command
+	    else (printout t "Invalid move" t)))
+
+
+(defrule move-east
+	?p <- (action move e)
+	?q <- (at agent ?x ?y)
+	(x-bound ?z)
+	=>
+	(if (< ?x ?z) then	; To make sure we don't move off the map
+	    (printout t "Moving East" t)
+	    (assert (at agent (+ ?x 1) ?y))	; Move the agent's position
+	    (retract ?q)	; Eliminate the agent's old position
+	    (retract ?p)	; Eliminate the command
+	    else (printout t "Invalid move" t)))
+
+(defrule fire-north
+	?p <- (action fire n)
+	(at agent ?x ?y)
+	(at wumpus ?a ?b)
+	(test (> ?y 0))
+	=>	
+	(if (and (= ?x ?a) (= ?b (- ?y 1))) then ; We killed the wumpus
+	    (printout t "You killed the wumpus!" t)
+	    (halt)
+	else
+	    (printout t "You missed! HA ha" t)
+	    (halt)))
+
+(defrule fire-south
+	?p <- (action fire s)
+	(at agent ?x ?y)
+	(at wumpus ?a ?b)
+	(y-bound ?q)
+	(test (< ?y ?q))
+	=>	
+	(if (and (= ?x ?a) (= ?b (+ ?y 1))) then ; We killed the wumpus
+	    (printout t "You killed the wumpus!" t)
+	    (halt)
+	else
+	    (printout t "You missed! HA ha" t)
+	    (halt)))
+
+(defrule fire-west
+	?p <- (action fire w)
+	(at agent ?x ?y)
+	(at wumpus ?a ?b)
+	(test (> ?x 0))
+	=>	
+	(if (and (= (- ?x 1) ?a) (= ?b ?y)) then ; We killed the wumpus
+	    (printout t "You killed the wumpus!" t)
+	    (halt)
+	else
+	    (printout t "You missed! HA ha" t)
+	    (halt)))
+
+(defrule fire-east
+	?p <- (action fire e)
+	(at agent ?x ?y)
+	(at wumpus ?a ?b)
+	(x-bound ?q)
+	(test (< ?x ?q))
+	=>	
+	(if (and (= (+ ?x 1) ?a) (= ?b ?y)) then ; We killed the wumpus
+	    (printout t "You killed the wumpus!" t)
+	    (halt)
+	else
+	    (printout t "You missed! HA ha" t)
+	    (halt)))
