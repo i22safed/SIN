@@ -1,5 +1,7 @@
 ;*****************************************
 ; Autores:
+; - Salido Álvarez, Rafael
+; - Sánchez Fernández, David
 ; Historial de cambios:
 ;  - Fecha: mejoras/cambios
 ;*****************************************
