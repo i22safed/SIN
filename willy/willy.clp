@@ -11,365 +11,102 @@
 ;Tipo: hechos
 ;Función: Guardar todos los movimientos que va a realizar Willy por el espacio
 
-(deffacts Hecho1
-  (ultimoMovimiento NULL) ;guardamos la direccón del último moviento que Willy ha realizado.
-  (numeroMovimientos 0) ;guardamos el número de movimientos.
-  (casilla 0 0) ;almacenamos una casilla ya visitada por Willy.
-  (casilla-actual 0 0) ;almacenamos donde se ecuentra Willy actualmente.
-  (Secuencia 0) ;almacenamos por donde va la ejecución del programa.
-  (numeroBloqueos 0) ;guardamos los bloqueos en el movimiento
+(deftemplate casilla
+  (slot posicion-x (type INTEGER) (default ?NONE))
+  (slot posicion-y (type INTEGER) (default ?NONE))
+  (slot visitada (type INTEGER)(allowed-values 0 1) (default 0))
+  (slot monstruo (type INTEGER)(allowed-values 0 1) (default 0))
+  (slot agujero (type INTEGER)(allowed-values 0 1) (default 0))
 )
-;*****************************************
 
-
-;********puedeMoverseWilly****************
-;Tipo: regla
-;Función: estable un límite de movimiento para que Willy pueda moverse o no.
-;Precondición: prioridad a 50 para la ejecución en el momento correcto.
-
-(defrule puedeMoverseWilly
-	(declare (salience 50))
-	?id <- (Secuencia 0)
-	(numeroMovimientos ?x)
-	(test (< ?x 999))
-=>
-	(retract ?id)
-	(assert (Secuencia 1))
+(deffacts hechos
+  (casilla (posicion-x 0)(posicion-y 0)(visitada 1))
+  (ultimoMovimiento NULL)
+  (numeroMovimientos 0)
+  (casilla-actual 0 0)
 )
-;*****************************************
+
+(defrule moverNorte
+  (declare (salience 10));Prioridad
+
+  ;Comprobamos si existe el norte, para que en caso de que sea afirmativa Willy se mueva hacia dicha posición
+  (directions $? ?direction&:(eq ?direction north) $?)
+
+  ?id1 <- (casilla-actual ?x ?y)
 
 
-;********puedeMoverseWilly****************
-;Tipo: regla
-;Función: se escoge dirección al azar y se analiza para ver si es posible moverse en dicha dirección.
-;Precondición: prioridad a 50 para la ejecución en el momento correcto.
-
-(defrule EscogerDireccion
-	?id <- (Secuencia 1)
-	(numeroMovimientos ?x)
-	(directions $? ?direction $?)
-=>
-	(retract ?id)
-	(assert (Secuencia 2))
-	(assert (proxMov ?direction))
-)
-;*****************************************
+  (not(exists(casilla(posicion-x ?x)(posicion-y ?b&:(= (+ ?y 1) ?b)))));comprobamos que la casilla a la que vamos a movernos no ha sido visitada.
 
 
-;********posiciónMovimiento***************
-;Tipo: regla
-;Función: metemos como hecho proxCasilla para comprobar cuál es la casilla a la que nos moveriamos.
-
-(defrule posicionMovimiento
-	?id <- (Secuencia 2)
-	(proxMov ?proxDireccion)
-	(casilla-actual ?i ?j)
-=>
-	(retract ?id)
-
-	(if (eq ?proxDireccion north)
-		then (assert (proxCasilla (+ ?i 1) ?j)))
-	(if (eq ?proxDireccion south)
-		then (assert (proxCasilla (- ?i 1) ?j)))
-	(if (eq ?proxDireccion east)
-		then (assert (proxCasilla ?i (+ ?j 1))))
-	(if (eq ?proxDireccion west)
-		then (assert (proxCasilla ?i (- ?j 1))))
-
-	(assert (Secuencia 3))
-)
-;*****************************************
-
-;********comprobarCasilla*****************
-;Tipo: regla
-;Función: comprobar si la casilla a la que nos vamos a mover ha sido visitada anteriormente.
-;Información: Si se dispara la regla se produce un retroceso en la secuencia del programa.
-
-(defrule comprobarCasilla
-	?id <- (Secuencia 3)
-	?id2 <- (proxCasilla ?i ?j)
-	?id3 <- (proxMov ?)
-	?id4 <- (numeroBloqueos ?valor)
-	(casilla ?i ?j)
-=>
-	(retract ?id ?id2 ?id3 ?id4)
-	(assert (numeroBloqueos (+ ?valor 1)))
-	(assert (Secuencia 0))
-)
-;*****************************************
-
-;********comprobarCasillaNoVisitada*******
-;Tipo: regla
-;Función: comprobar si la casilla a la que nos vamos a mover no ha sido visitada anteriormente. (ES LO CONTRARIO A LA REGLA ANTERIOR)
-;Información: Si se dispara la regla se produce un retroceso en la secuencia del programa.
-
-(defrule comprobarCasillaNoVisitada "En este caso NO esta visitada"
-	?id <- (Secuencia 3)
-	?id2 <- (proxCasilla ?i ?j)
-	?id3 <- (numeroBloqueos ?valor)
-	(not (casilla ?i ?j))
-=>
-	(retract ?id ?id2)
-	(assert (numeroBloqueos 0))
-	(assert (Secuencia 4))
-)
-;*****************************************
-
-;********movimientoBloqueado**************
-;Tipo: regla
-;Función: esta regla comprueba si hay un bucle en las secuenias 0, 1 y 2. En caso de extir, rompe el bucle activando la secuencia especial.
-;Información: Si se dispara la regla se produce un retroceso en la secuencia del programa.
-;Postcondición: establecemos la prioridad a 51 para asegurar su ejecución.
-
-(defrule movientoBloqueado
-	(declare (salience 51))
-	?id <- (numeroBloqueos ?valor)
-	?id2 <- (Secuencia ?)
-	(test (eq ?valor 15))
-=>
-	(retract ?id ?id2)
-	(assert (numeroBloqueos 0))
-	(assert (Secuencia Especial))
-)
-;*****************************************
-
-;********movimientoAleatorio**************
-;Tipo: regla
-;Función: esta regla realiza un movimiento de Willy de forma aleatoria para que deje de estar bloqueado.
-;Información: Si se activa esta regla la secuencia del programa sigue por 4.
-
-(defrule movimientoAleatorio
-	?id <- (Secuencia Especial)
-	(directions $? ?direction $?)
-=>
-	(retract ?id)
-	(assert (proxMov ?direction))
-	(assert (Secuencia 4))
-)
-;*****************************************
-
-;********moverWillyNorte**************
-;Tipo: regla
-;Función: esta regla mueve a Willy una casilla hacia el norte.
-
-(defrule moverWillyNorte
-	?id <- (numeroMovimientos ?x)
-   	?id2 <- (proxMov ?direction)
-   	?id3 <- (Secuencia 4)
-   	?id4 <- (casilla-actual ?i ?j)
-   	?id5 <- (ultimoMovimiento ?)
-   	?id6 <- (numeroBloqueos ?)
-
-   	(test (eq ?direction north))
-=>
-	(retract ?id ?id2 ?id3 ?id4 ?id5 ?id6)
-	(assert (numeroBloqueos 0))
-	(assert (numeroMovimientos (+ ?x 1)))
-	(assert (ultimoMovimiento north))
-
-	(assert (casilla (+ ?i 1) ?j))
-	(assert (casilla-actual (+ ?i 1) ?j))
-
-	(assert (Secuencia 0))
-   	(moveWilly ?direction) ;;Llamada a la función que se nos da ya implementada
-)
-;*****************************************
-
-;********moverWillySur********************
-;Tipo: regla
-;Función: esta regla mueve a Willy una casilla hacia el sur.
-
-(defrule moverWillySur
-	?id <- (numeroMovimientos ?x)
-   	?id2 <- (proxMov ?direction)
-   	?id3 <- (Secuencia 4)
-   	?id4 <- (casilla-actual ?i ?j)
-   	?id5 <- (ultimoMovimiento ?)
-   	?id6 <- (numeroBloqueos ?)
-
-   	(test (eq ?direction south))
-=>
-	(retract ?id ?id2 ?id3 ?id4 ?id5 ?id6)
-	(assert (numeroBloqueos 0))
-	(assert (numeroMovimientos (+ ?x 1)))
-	(assert (ultimoMovimiento south))
-
-	(assert (casilla (- ?i 1) ?j))
-	(assert (casilla-actual (- ?i 1) ?j))
-
-	(assert (Secuencia 0))
-   	(moveWilly ?direction) ;;Llamada a la función que se nos da ya implementada
-)
-;*****************************************
-
-;********moverWillyEste*******************
-;Tipo: regla
-;Función: esta regla mueve a Willy una casilla hacia el este.
-
-(defrule moverWillyEste
-	?id <- (numeroMovimientos ?x)
-   	?id2 <- (proxMov ?direction)
-   	?id3 <- (Secuencia 4)
-   	?id4 <- (casilla-actual ?i ?j)
-   	?id5 <- (ultimoMovimiento ?)
-   	?id6 <- (numeroBloqueos ?)
-
-   	(test (eq ?direction east))
-=>
-	(retract ?id ?id2 ?id3 ?id4 ?id5 ?id6)
-	(assert (numeroBloqueos 0))
-	(assert (numeroMovimientos (+ ?x 1)))
-	(assert (ultimoMovimiento east))
-
-	(assert (casilla ?i (+ ?j 1)))
-	(assert (casilla-actual ?i (+ ?j 1)))
-
-	(assert (Secuencia 0))
-   	(moveWilly ?direction) ;;Llamada a la función que se nos da ya implementada
-)
-;*****************************************
-
-;********moverWillyOeste******************
-;Tipo: regla
-;Función: esta regla mueve a Willy una casilla hacia el este.
-
-(defrule moverWillyOeste
-	?id <- (numeroMovimientos ?x)
-   	?id2 <- (proxMov ?direction)
-   	?id3 <- (Secuencia 4)
-   	?id4 <- (casilla-actual ?i ?j)
-   	?id5 <- (ultimoMovimiento ?)
-   	?id6 <- (numeroBloqueos ?)
-
-   	(test (eq ?direction west))
-=>
-	(retract ?id ?id2 ?id3 ?id4 ?id5 ?id6)
-	(assert (numeroBloqueos 0))
-	(assert (numeroMovimientos (+ ?x 1)))
-	(assert (ultimoMovimiento west))
-
-	(assert (casilla ?i (- ?j 1)))
-	(assert (casilla-actual ?i (- ?j 1)))
-
-	(assert (Secuencia 0))
-   	(moveWilly ?direction) ;;Llamada a la función que se nos da ya implementada
-)
-;*****************************************
-
-
-
-
-
-
-
-
-
-(defrule peligromonstruo
- 	(declare (salience 61))
-	(or (percepts Noise)
- 		(percepts Noise ?)
- 		(percepts ? Noise))
-
- 	(not (haslaser)) 
-
- 	?id <- (numeroMovimientos ?x)
-    ?id2 <- (proxMov ?direction)
-    ?id3 <- (Secuencia 4)
-    ?id4 <- (casilla-actual ?i ?j)
-    ?id5 <- (ultimoMovimiento ?mov)
 
 =>
- 	(retract ?id ?id2 ?id3 ?id4 ?id5)
- 	(assert (Secuencia 0))
- 	(assert (numeroMovimientos (+ ?x 1)))
-
- 	(if (eq ?mov north)
- 		then (moveWilly south))
- 	(if (eq ?mov south)
- 		then (moveWilly north))
- 	(if (eq ?mov east)
- 		then (moveWilly west))
- 	(if (eq ?mov west)
- 		then (moveWilly east))
-
-    (if (eq ?mov north)
-   		then (assert (casilla-actual (+ ?i 1) ?j)))
-   	(if (eq ?mov east)
-   		then (assert (casilla-actual ?i (+ ?j 1))))
-	(if (eq ?mov west)
-		then (assert (casilla-actual ?i (- ?j 1))))
-	(if (eq ?mov south)
-		then (assert (casilla-actual (- ?i 1) ?j)))
-
-	(if (eq ?mov north)
- 		then (assert (ultimoMovimiento south)))
-	(if (eq ?mov south)
- 		then (assert (ultimoMovimiento north)))
- 	(if (eq ?mov east)
- 		then (assert (ultimoMovimiento west)))
- 	(if (eq ?mov west)
- 		then (assert (ultimoMovimiento east)))
+  (moveWilly north)
+  (retract ?id1)
+  (assert (ultimoMovimiento north))
+  (assert (casilla-actual ?x (+ ?y 1)))
+  (assert (casilla(posicion-x ?x)(posicion-y (+ ?y 1))(visitada 1)))
 )
 
-;---------peligroagujeronegro---------;
-;Tipo: regla
-;Función: en caso de que haya unas arenas movedizas cerca realiza un movimiento hacia atrás para esquivar el peligro.
-;Nota2: se establece la prioridad a 62 para asegurar su ejecución el instante correcto.
 
-(defrule peligroagujeronegro
- 	(declare (salience 62))
-	(or (percepts Pull)
- 		(percepts Pull ?)
- 		(percepts ? Pull))
+(defrule moverSur
+  (declare (salience 10));Prioridad
 
- 	?id <- (numeroMovimientos ?x)
-    ?id2 <- (proxMov ?direction)
-    ?id3 <- (Secuencia 4)
-    ?id4 <- (casilla-actual ?i ?j)
-    ?id5 <- (ultimoMovimiento ?mov)
+  ;Comprobamos si existe el norte, para que en caso de que sea afirmativa Willy se mueva hacia dicha posición
+  (directions $? ?direction&:(eq ?direction south) $?)
+
+  ?id1 <- (casilla-actual ?x ?y)
+
+
+  (not(exists(casilla(posicion-x ?x)(posicion-y ?b&:(= (- ?y 1) ?b)))));comprobamos que la casilla a la que vamos a movernos no ha sido visitada.
+
+
 
 =>
- 	(retract ?id ?id2 ?id3 ?id4 ?id5)
- 	(assert (Secuencia 0))
- 	(assert (numeroMovimientos (+ ?x 1)))
-
- 	(if (eq ?mov north)
- 		then (moveWilly south))
- 	(if (eq ?mov south)
- 		then (moveWilly north))
- 	(if (eq ?mov east)
- 		then (moveWilly west))
- 	(if (eq ?mov west)
- 		then (moveWilly east))
-
-    (if (eq ?mov north)
-   		then (assert (casilla-actual (+ ?i 1) ?j)))
-   	(if (eq ?mov east)
-   		then (assert (casilla-actual ?i (+ ?j 1))))
-	(if (eq ?mov west)
-		then (assert (casilla-actual ?i (- ?j 1))))
-	(if (eq ?mov south)
-		then (assert (casilla-actual (- ?i 1) ?j)))
-
-	(if (eq ?mov north)
- 		then (assert (ultimoMovimiento south)))
-	(if (eq ?mov south)
- 		then (assert (ultimoMovimiento north)))
- 	(if (eq ?mov east)
- 		then (assert (ultimoMovimiento west)))
- 	(if (eq ?mov west)
- 		then (assert (ultimoMovimiento east)))
+  (moveWilly south)
+  (retract ?id1)
+  (assert (ultimoMovimiento south))
+  (assert (casilla-actual ?x (- ?y 1)))
+  (assert (casilla(posicion-x ?x)(posicion-y (- ?y 1))(visitada 1)))
 )
 
-;(defrule moveWilly
-;   (directions $? ?direction $?)
-;   =>
-;   (moveWilly ?direction)
-;   )
+(defrule moverEste
+  (declare (salience 10));Prioridad
 
-;(defrule fireWilly
-;	(hasLaser)
-;	(directions $? ?direction $?)
-;	=>
-;	(fireLaser ?direction)
-;	)
+  ;Comprobamos si existe el norte, para que en caso de que sea afirmativa Willy se mueva hacia dicha posición
+  (directions $? ?direction&:(eq ?direction east) $?)
+
+  ?id1 <- (casilla-actual ?x ?y)
+
+
+  (not(exists(casilla(posicion-x ?b&:(= (+ ?x 1) ?b))(posicion-y ?y))));comprobamos que la casilla a la que vamos a movernos no ha sido visitada.
+
+
+
+=>
+  (moveWilly east)
+  (retract ?id1)
+  (assert (ultimoMovimiento east))
+  (assert (casilla-actual (+ ?x 1) ?y))
+  (assert (casilla(posicion-x (+ ?x 1))(posicion-y ?y)(visitada 1)))
+)
+
+(defrule moverOeste
+  (declare (salience 10));Prioridad
+
+  ;Comprobamos si existe el norte, para que en caso de que sea afirmativa Willy se mueva hacia dicha posición
+  (directions $? ?direction&:(eq ?direction west) $?)
+
+  ?id1 <- (casilla-actual ?x ?y)
+
+
+  (not(exists(casilla(posicion-x ?b&:(= (- ?x 1) ?b))(posicion-y ?y))));comprobamos que la casilla a la que vamos a movernos no ha sido visitada.
+
+
+
+=>
+  (moveWilly west)
+  (retract ?id1)
+  (assert (ultimoMovimiento west))
+  (assert (casilla-actual (- ?x 1) ?y))
+  (assert (casilla(posicion-x (- ?x 1))(posicion-y ?y)(visitada 1)))
+)
