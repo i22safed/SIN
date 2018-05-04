@@ -21,7 +21,7 @@
   (slot posicion-y (type INTEGER) (default ?NONE)) ;Coordenada y de la casilla
   (slot visitada (type INTEGER)(allowed-values 0 1) (default 0)) ;Indicamos que la casilla ha sido visitada
   (slot monstruo (type INTEGER)(allowed-values 0 1) (default 0)) ;Sonido de monstruo detectado en la casilla
-  (slot agujero (type INTEGER)(allowed-values 0 1) (default 0)) ;Sonido del agujero de gusano detectado en la casilla
+  (slot agujero (type INTEGER)(allowed-values 0 1)(default 0)) ;Sonido del agujero de gusano detectado en la casilla
 )
 ;*****************************************************************************
 
@@ -31,7 +31,7 @@
 ;Función: Almacenar varios hechos que necesitaremos a lo largo de la ejecución
 
 (deffacts hechos
-  (casilla (posicion-x 0)(posicion-y 0)(visitada 1)) ;Hecho que usa la plantilla anteriormente creada para mantener un control de las casillas a las que nos movemos
+  (casilla (posicion-x 0)(posicion-y 0)(visitada 1)(agujero 0)) ;Hecho que usa la plantilla anteriormente creada para mantener un control de las casillas a las que nos movemos
   (ultimoMovimiento NULL) ;Indicación de cuál ha sido nuestro último movimiento para en caso de encontrar un agujero o mosntruo podamos volver hacia atrás
   (numeroMovimientos 0)
   (casilla-actual 0 0) ;Casilla en la que nos enontramos actualmente
@@ -59,16 +59,19 @@
 
   (not(exists(casilla(posicion-x ?x)(posicion-y ?b&:(= (+ ?y 1) ?b)))));Comprobamos que la casilla a la que vamos a movernos no ha sido visitada
 
+  ?id2 <- (ultimoMovimiento ?)
+
 =>
   (moveWilly north);Movemos a Willy hacia el norte
 
   (retract ?id1);Retractamos la posición donde estaba willy
+  (retract ?id2)
 
   (assert (ultimoMovimiento north));Guardamos hacia donde se ha movido Willy
 
   (assert (casilla-actual ?x (+ ?y 1)));Actualizamos hacia la casilla que se ha movido Willy
 
-  (assert (casilla(posicion-x ?x)(posicion-y (+ ?y 1))(visitada 1)));Guardamos la casilla nueva que acabamos de visitar
+  (assert (casilla(posicion-x ?x)(posicion-y (+ ?y 1))(visitada 1)(agujero 0)));Guardamos la casilla nueva que acabamos de visitar
 )
 ;*****************************************************************************
 
@@ -80,6 +83,7 @@
   (directions $? ?direction&:(eq ?direction south) $?);Comprobamos si existe el sur, para que en caso de que sea afirmativa Willy pueda moverse hacia dicha dirección
 
   ?id1 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  ?id2 <- (ultimoMovimiento ?)
 
 
   (not(exists(casilla(posicion-x ?x)(posicion-y ?b&:(= (- ?y 1) ?b)))));Comprobamos que la casilla a la que vamos a movernos no ha sido visitada
@@ -88,12 +92,13 @@
   (moveWilly south);Movemos a Willy hacia el sur
 
   (retract ?id1);Retractamos la posición donde estaba willy
+  (retract ?id2)
 
   (assert (ultimoMovimiento south));Guardamos hacia donde se ha movido Willy
 
   (assert (casilla-actual ?x (- ?y 1)));Actualizamos hacia la casilla que se ha movido Willy
 
-  (assert (casilla(posicion-x ?x)(posicion-y (- ?y 1))(visitada 1)));Guardamos la casilla nueva que acabamos de visitar
+  (assert (casilla(posicion-x ?x)(posicion-y (- ?y 1))(visitada 1)(agujero 0)));Guardamos la casilla nueva que acabamos de visitar
 )
 ;*****************************************************************************
 
@@ -106,19 +111,21 @@
   (directions $? ?direction&:(eq ?direction east) $?);Comprobamos si existe el oeste, para que en caso de que sea afirmativa Willy pueda moverse hacia dicha dirección
 
   ?id1 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  ?id2 <- (ultimoMovimiento ?)
 
-  (not(exists(casilla(posicion-x ?b&:(= (+ ?x 1) ?b))(posicion-y ?y))));Comprobamos que la casilla a la que vamos a movernos no ha sido visitada
+  (not(exists(casilla(posicion-x ?b&:(= (+ ?x 1) ?b))(posicion-y ?y)(agujero 0))));Comprobamos que la casilla a la que vamos a movernos no ha sido visitada
 
 =>
   (moveWilly east);Movemos a Willy hacia el este
 
   (retract ?id1);Retractamos la posición donde estaba willy
+  (retract ?id2)
 
   (assert (ultimoMovimiento east));Guardamos hacia donde se ha movido Willy
 
   (assert (casilla-actual (+ ?x 1) ?y));Actualizamos hacia la casilla que se ha movido Willy
 
-  (assert (casilla(posicion-x (+ ?x 1))(posicion-y ?y)(visitada 1)));Guardamos la casilla nueva que acabamos de visitar
+  (assert (casilla(posicion-x (+ ?x 1))(posicion-y ?y)(visitada 1)(agujero 0)));Guardamos la casilla nueva que acabamos de visitar
 )
 ;*****************************************************************************
 
@@ -131,6 +138,7 @@
   (directions $? ?direction&:(eq ?direction west) $?);Comprobamos si existe el oeste, para que en caso de que sea afirmativa Willy pueda moverse hacia dicha dirección
 
   ?id1 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  ?id2 <- (ultimoMovimiento ?)
 
   (not(exists(casilla(posicion-x ?b&:(= (- ?x 1) ?b))(posicion-y ?y))));Comprobamos que la casilla a la que vamos a movernos no ha sido visitada
 
@@ -138,12 +146,13 @@
   (moveWilly west);Movemos a Willy hacia el oeste
 
   (retract ?id1);Retractamos la posición donde estaba willy
+  (retract ?id2)
 
   (assert (ultimoMovimiento west));Guardamos hacia donde se ha movido Willy
 
   (assert (casilla-actual (- ?x 1) ?y));Actualizamos hacia la casilla que se ha movido Willy
 
-  (assert (casilla(posicion-x (- ?x 1))(posicion-y ?y)(visitada 1)));Guardamos la casilla nueva que acabamos de visitar
+  (assert (casilla(posicion-x (- ?x 1))(posicion-y ?y)(visitada 1)(agujero 0)));Guardamos la casilla nueva que acabamos de visitar
 )
 ;*****************************************************************************
 
@@ -157,14 +166,12 @@
   ?id1 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
 
 =>
-  (assert (ultimoMovimiento ?direction));Movemos hacia la dirección anterior que hemos elegido aleatoriamente
 
   (moveWilly ?direction);Movemos a Willy hacia dicha dirección
-
+  (assert (ultimoMovimiento ?direction))
   (retract ?id1);Retractamos la posición donde estaba willy
 
-
-;Dependiendo a que posición se haya movido Willy se actualiza la casilla 
+;Dependiendo a que posición se haya movido Willy se actualiza la casilla
     (if (eq ?direction north)
       then (assert (casilla-actual ?x (+ ?y 1))))
     (if (eq ?direction south)
@@ -176,3 +183,43 @@
 
   )
 ;*****************************************************************************
+
+(defrule peligroagujeronegro
+  (declare (salience 60));
+  (percepts Pull)
+
+  ?id1 <- (ultimoMovimiento ?direccionMovimiento)
+  ?id2 <- (casilla-actual ?x ?y);
+
+=>
+      (retract ?id1)
+      (retract ?id2)
+
+      (if (eq ?direccionMovimiento north)
+      then (assert (ultimoMovimiento south)))
+      (if (eq ?direccionMovimiento south)
+        then (assert (ultimoMovimiento north)))
+      (if (eq ?direccionMovimiento east)
+        then (assert (ultimoMovimiento west)))
+      (if (eq ?direccionMovimiento west)
+        then (assert (ultimoMovimiento east)))
+
+      (if (eq ?direccionMovimiento north)
+     		then (assert (casilla-actual ?x (- ?y 1))))
+    	(if (eq ?direccionMovimiento south)
+     		then (assert (casilla-actual ?x (+ ?y 1))))
+     	(if (eq ?direccionMovimiento east)
+     		then (assert (casilla-actual (- ?x 1) ?y)))
+     	(if (eq ?direccionMovimiento west)
+     		then (assert (casilla-actual (+ ?x 1) ?y)))
+
+      (if (eq ?direccionMovimiento north)
+        then (moveWilly south))
+      (if (eq ?direccionMovimiento south)
+        then (moveWilly north))
+      (if (eq ?direccionMovimiento east)
+        then (moveWilly west))
+      (if (eq ?direccionMovimiento west)
+        then (moveWilly east))
+
+  )
