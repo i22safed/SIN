@@ -5,10 +5,7 @@
 ; Historial de cambios:
 ;  - Fecha: mejoras/cambios
 ;  - Cosas que faltan por implementar:
-;     + Detección de los peligros (agujeros de gusano y monstruos)
 ;     + Disparar el laser
-;     + Comprobar que el movimiento aleatorio no lo hace hacia una casilla con peligro
-;     + Quitar todos los if que haya en el código (Opcional pero hay quita nota)
 ;*****************************************
 
 
