@@ -164,12 +164,13 @@
   (directions $? ?direction $?);Consultamos las direcciones disponibles y nos quedamos con una de ellas
 
   ?id1 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  ?id2 <- (ultimoMovimiento ?)
 
 =>
 
   (moveWilly ?direction);Movemos a Willy hacia dicha dirección
-  (assert (ultimoMovimiento ?direction))
   (retract ?id1);Retractamos la posición donde estaba willy
+  (retract ?id2)
 
 ;Dependiendo a que posición se haya movido Willy se actualiza la casilla
     (if (eq ?direction north)
@@ -180,6 +181,15 @@
       then (assert (casilla-actual (+ ?x 1) ?y)))
     (if (eq ?direction west)
       then (assert (casilla-actual (- ?x 1) ?y)))
+
+    (if (eq ?direction north)
+    then (assert (ultimoMovimiento north)))
+    (if (eq ?direction south)
+      then (assert (ultimoMovimiento south)))
+    (if (eq ?direction east)
+      then (assert (ultimoMovimiento east)))
+    (if (eq ?direction west)
+      then (assert (ultimoMovimiento west)))
 
   )
 ;*****************************************************************************
