@@ -194,7 +194,7 @@
   )
 ;*****************************************************************************
 
-(defrule peligroagujeronegro
+(defrule peligroAgujeroNegro
   (declare (salience 60));
   (percepts Pull)
 
@@ -233,3 +233,83 @@
         then (moveWilly east))
 
   )
+
+(defrule peligroMonstruo
+  (declare (salience 60));
+  (percepts Noise)
+
+  ?id1 <- (ultimoMovimiento ?direccionMovimiento)
+  ?id2 <- (casilla-actual ?x ?y);
+
+=>
+      (retract ?id1)
+      (retract ?id2)
+
+      (if (eq ?direccionMovimiento north)
+      then (assert (ultimoMovimiento south)))
+      (if (eq ?direccionMovimiento south)
+        then (assert (ultimoMovimiento north)))
+      (if (eq ?direccionMovimiento east)
+        then (assert (ultimoMovimiento west)))
+      (if (eq ?direccionMovimiento west)
+        then (assert (ultimoMovimiento east)))
+
+      (if (eq ?direccionMovimiento north)
+     		then (assert (casilla-actual ?x (- ?y 1))))
+    	(if (eq ?direccionMovimiento south)
+     		then (assert (casilla-actual ?x (+ ?y 1))))
+     	(if (eq ?direccionMovimiento east)
+     		then (assert (casilla-actual (- ?x 1) ?y)))
+     	(if (eq ?direccionMovimiento west)
+     		then (assert (casilla-actual (+ ?x 1) ?y)))
+
+      (if (eq ?direccionMovimiento north)
+        then (moveWilly south))
+      (if (eq ?direccionMovimiento south)
+        then (moveWilly north))
+      (if (eq ?direccionMovimiento east)
+        then (moveWilly west))
+      (if (eq ?direccionMovimiento west)
+        then (moveWilly east))
+
+)
+
+(defrule peligroMonstruoyAgujero
+  (declare (salience 60));
+  (percepts Noise Pull)
+
+  ?id1 <- (ultimoMovimiento ?direccionMovimiento)
+  ?id2 <- (casilla-actual ?x ?y);
+
+=>
+      (retract ?id1)
+      (retract ?id2)
+
+      (if (eq ?direccionMovimiento north)
+      then (assert (ultimoMovimiento south)))
+      (if (eq ?direccionMovimiento south)
+        then (assert (ultimoMovimiento north)))
+      (if (eq ?direccionMovimiento east)
+        then (assert (ultimoMovimiento west)))
+      (if (eq ?direccionMovimiento west)
+        then (assert (ultimoMovimiento east)))
+
+      (if (eq ?direccionMovimiento north)
+     		then (assert (casilla-actual ?x (- ?y 1))))
+    	(if (eq ?direccionMovimiento south)
+     		then (assert (casilla-actual ?x (+ ?y 1))))
+     	(if (eq ?direccionMovimiento east)
+     		then (assert (casilla-actual (- ?x 1) ?y)))
+     	(if (eq ?direccionMovimiento west)
+     		then (assert (casilla-actual (+ ?x 1) ?y)))
+
+      (if (eq ?direccionMovimiento north)
+        then (moveWilly south))
+      (if (eq ?direccionMovimiento south)
+        then (moveWilly north))
+      (if (eq ?direccionMovimiento east)
+        then (moveWilly west))
+      (if (eq ?direccionMovimiento west)
+        then (moveWilly east))
+
+)
