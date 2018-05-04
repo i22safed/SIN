@@ -40,6 +40,8 @@
 ;-----------------------------------------------------------------------------
 
 
+
+
 ;********Movimientos de Willy*************************************************
 ;Hemos creado 4 reglas con movimientos hacia los 4 puntos cardinales más una regla adicional que se dispara si Willy no puede moverse
 ;Las reglas tienen todas la misma prioridad, de manera que el movimiento (en caso de que se pueda realizar) es aleatorio entre los movimientos disponibles
@@ -55,16 +57,20 @@
   (declare (salience 10));Prioridad (Las 4 reglas de movimiento tienen la misma)
 
   (directions $? ?direction&:(eq ?direction north) $?);Comprobamos si existe el norte, para que en caso de que sea afirmativa Willy pueda moverse hacia dicha dirección
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
 
   (not(exists(casilla(posicion-x ?x)(posicion-y ?b&:(= (+ ?y 1) ?b)))));Comprobamos que la casilla a la que vamos a movernos no ha sido visitada
 
   ?id2 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
 
+
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
+
+
 =>
   (moveWilly north);Movemos a Willy hacia el norte
-
+  (retract ?id);Retractamos el hecho del número de movimientos
   (retract ?id1);Retractamos la posición donde estaba willy
   (retract ?id2);Retractamos el hecho del último movimiendo
 
@@ -73,6 +79,7 @@
   (assert (casilla-actual ?x (+ ?y 1)));Actualizamos hacia la casilla que se ha movido Willy
 
   (assert (casilla(posicion-x ?x)(posicion-y (+ ?y 1))(visitada 1)(agujero 0)));Guardamos la casilla nueva que acabamos de visitar
+  (assert (numeroMovimientos (+ ?m 1)))
 )
 ;*****************************************************************************
 
@@ -82,15 +89,17 @@
   (declare (salience 10));Prioridad (Las 4 reglas de movimiento tienen la misma)
 
   (directions $? ?direction&:(eq ?direction south) $?);Comprobamos si existe el sur, para que en caso de que sea afirmativa Willy pueda moverse hacia dicha dirección
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
   ?id2 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
 
 
   (not(exists(casilla(posicion-x ?x)(posicion-y ?b&:(= (- ?y 1) ?b)))));Comprobamos que la casilla a la que vamos a movernos no ha sido visitada
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
   (moveWilly south);Movemos a Willy hacia el sur
+  (retract ?id);Retractamos el hecho del número de movimientos
 
   (retract ?id1);Retractamos la posición donde estaba willy
   (retract ?id2);Retractamos el hecho del último movimiendo
@@ -100,6 +109,8 @@
   (assert (casilla-actual ?x (- ?y 1)));Actualizamos hacia la casilla que se ha movido Willy
 
   (assert (casilla(posicion-x ?x)(posicion-y (- ?y 1))(visitada 1)(agujero 0)));Guardamos la casilla nueva que acabamos de visitar
+  (assert (numeroMovimientos (+ ?m 1)))
+
 )
 ;*****************************************************************************
 
@@ -110,14 +121,16 @@
   (declare (salience 10));Prioridad (Las 4 reglas de movimiento tienen la misma)
 
   (directions $? ?direction&:(eq ?direction east) $?);Comprobamos si existe el oeste, para que en caso de que sea afirmativa Willy pueda moverse hacia dicha dirección
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
   ?id2 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
 
   (not(exists(casilla(posicion-x ?b&:(= (+ ?x 1) ?b))(posicion-y ?y)(agujero 0))));Comprobamos que la casilla a la que vamos a movernos no ha sido visitada
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
   (moveWilly east);Movemos a Willy hacia el este
+  (retract ?id);Retractamos el hecho del número de movimientos
 
   (retract ?id1);Retractamos la posición donde estaba willy
   (retract ?id2);Retractamos el hecho del último movimiendo
@@ -127,6 +140,8 @@
   (assert (casilla-actual (+ ?x 1) ?y));Actualizamos hacia la casilla que se ha movido Willy
 
   (assert (casilla(posicion-x (+ ?x 1))(posicion-y ?y)(visitada 1)(agujero 0)));Guardamos la casilla nueva que acabamos de visitar
+  (assert (numeroMovimientos (+ ?m 1)))
+
 )
 ;*****************************************************************************
 
@@ -137,14 +152,16 @@
   (declare (salience 10));Prioridad (Las 4 reglas de movimiento tienen la misma)
 
   (directions $? ?direction&:(eq ?direction west) $?);Comprobamos si existe el oeste, para que en caso de que sea afirmativa Willy pueda moverse hacia dicha dirección
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
   ?id2 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
 
   (not(exists(casilla(posicion-x ?b&:(= (- ?x 1) ?b))(posicion-y ?y))));Comprobamos que la casilla a la que vamos a movernos no ha sido visitada
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
   (moveWilly west);Movemos a Willy hacia el oeste
+  (retract ?id);Retractamos el hecho del número de movimientos
 
   (retract ?id1);Retractamos la posición donde estaba willy
   (retract ?id2);Retractamos el hecho del último movimiendo
@@ -154,6 +171,8 @@
   (assert (casilla-actual (- ?x 1) ?y));Actualizamos hacia la casilla que se ha movido Willy
 
   (assert (casilla(posicion-x (- ?x 1))(posicion-y ?y)(visitada 1)(agujero 0)));Guardamos la casilla nueva que acabamos de visitar
+  (assert (numeroMovimientos (+ ?m 1)))
+
 )
 ;*****************************************************************************
 
@@ -164,13 +183,15 @@
   (declare (salience 5));Prioridad (Las 4 reglas de movimiento tienen la misma)
 
   (directions $? ?direction&:(eq ?direction north) $?);Comprobamos si existe el norte, para que en caso de que sea afirmativa Willy pueda moverse hacia dicha dirección
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
 
   ?id2 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
   (moveWilly north);Movemos a Willy hacia el norte
+  (retract ?id);Retractamos el hecho del número de movimientos
 
   (retract ?id1);Retractamos la posición donde estaba willy
   (retract ?id2);Retractamos el hecho del último movimiendo
@@ -178,6 +199,8 @@
   (assert (ultimoMovimiento north));Guardamos hacia donde se ha movido Willy
 
   (assert (casilla-actual ?x (+ ?y 1)));Actualizamos hacia la casilla que se ha movido Willy
+  (assert (numeroMovimientos (+ ?m 1)))
+
 
   )
 ;*****************************************************************************
@@ -189,13 +212,15 @@
   (declare (salience 5));Prioridad (Las 4 reglas de movimiento tienen la misma)
 
   (directions $? ?direction&:(eq ?direction south) $?);Comprobamos si existe el norte, para que en caso de que sea afirmativa Willy pueda moverse hacia dicha dirección
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
 
   ?id2 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
   (moveWilly south);Movemos a Willy hacia el norte
+  (retract ?id);Retractamos el hecho del número de movimientos
 
   (retract ?id1);Retractamos la posición donde estaba willy
   (retract ?id2);Retractamos el hecho del último movimiendo
@@ -203,6 +228,8 @@
   (assert (ultimoMovimiento south));Guardamos hacia donde se ha movido Willy
 
   (assert (casilla-actual ?x (- ?y 1)));Actualizamos hacia la casilla que se ha movido Willy
+  (assert (numeroMovimientos (+ ?m 1)))
+
 
 )
 ;*****************************************************************************
@@ -214,13 +241,15 @@
   (declare (salience 5));Prioridad (Las 4 reglas de movimiento tienen la misma)
 
   (directions $? ?direction&:(eq ?direction east) $?);Comprobamos si existe el norte, para que en caso de que sea afirmativa Willy pueda moverse hacia dicha dirección
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
 
   ?id2 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
   (moveWilly east);Movemos a Willy hacia el norte
+  (retract ?id);Retractamos el hecho del número de movimientos
 
   (retract ?id1);Retractamos la posición donde estaba willy
   (retract ?id2);Retractamos el hecho del último movimiendo
@@ -228,6 +257,8 @@
   (assert (ultimoMovimiento east));Guardamos hacia donde se ha movido Willy
 
 (assert (casilla-actual (+ ?x 1) ?y));Actualizamos hacia la casilla que se ha movido Willy
+(assert (numeroMovimientos (+ ?m 1)))
+
 
 )
 ;*****************************************************************************
@@ -239,13 +270,15 @@
   (declare (salience 5));Prioridad (Las 4 reglas de movimiento tienen la misma)
 
   (directions $? ?direction&:(eq ?direction west) $?);Comprobamos si existe el norte, para que en caso de que sea afirmativa Willy pueda moverse hacia dicha dirección
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
 
   ?id2 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
   (moveWilly west);Movemos a Willy hacia el norte
+  (retract ?id);Retractamos el hecho del número de movimientos
 
   (retract ?id1);Retractamos la posición donde estaba willy
   (retract ?id2);Retractamos el hecho del último movimiendo
@@ -253,6 +286,8 @@
   (assert (ultimoMovimiento west));Guardamos hacia donde se ha movido Willy
 
 (assert (casilla-actual (+ ?x 1) ?y));Actualizamos hacia la casilla que se ha movido Willy
+(assert (numeroMovimientos (+ ?m 1)))
+
 
 )
 
@@ -272,17 +307,22 @@
   (declare (salience 60));
   (percepts Pull);Comprobamos si hay ruido cercano de un agujero de gusano
   (ultimoMovimiento north);Comprobamos que el último moviento realizado proviene del norte
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
   ?id2 <- (casilla-actual ?x ?y);;Recogemos la posición en la que Willy se encuentra
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
+      (retract ?id);Retractamos el hecho del número de movimientos
+
       (retract ?id1);Retractamos el hecho del último movimiendo
       (retract ?id2);Retractamos la posición donde estaba willy
 
       (assert (ultimoMovimiento south));Guardamos hacia donde se ha movido Willy
       (assert (casilla-actual ?x (- ?y 1)));Actualizamos hacia la casilla que se ha movido Willy
       (moveWilly south);Movemos a Willy hacia el sur
+      (assert (numeroMovimientos (+ ?m 1)))
+
   )
 ;*****************************************************************************
 
@@ -293,17 +333,21 @@
   (declare (salience 60));
   (percepts Pull);Comprobamos si hay ruido cercano de un agujero de gusano
   (ultimoMovimiento south);Comprobamos que el último moviento realizado proviene del sur
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
   ?id2 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
+      (retract ?id);Retractamos el hecho del número de movimientos
       (retract ?id1);Retractamos el hecho del último movimiendo
       (retract ?id2);Retractamos la posición donde estaba willy
 
       (assert (ultimoMovimiento north));Guardamos hacia donde se ha movido Willy
       (assert (casilla-actual ?x (+ ?y 1)));Actualizamos hacia la casilla que se ha movido Willy
      	(moveWilly north);Movemos a Willy hacia el norte
+      (assert (numeroMovimientos (+ ?m 1)))
+
 )
 ;*****************************************************************************
 
@@ -314,16 +358,21 @@
   (declare (salience 60));
   (percepts Pull);Comprobamos si hay ruido cercano de un agujero de gusano
   (ultimoMovimiento east);Comprobamos que el último moviento realizado proviene del este
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
   ?id2 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
+      (retract ?id);Retractamos el hecho del número de movimientos
+
       (retract ?id1);Retractamos el hecho del último movimiendo
       (retract ?id2);Retractamos la posición donde estaba willy
       (assert (ultimoMovimiento west));Guardamos hacia donde se ha movido Willy
       (assert (casilla-actual (- ?x 1) ?y));Actualizamos hacia la casilla que se ha movido Willy
       (moveWilly west);Movemos a Willy hacia el oeste
+      (assert (numeroMovimientos (+ ?m 1)))
+
 )
 ;*****************************************************************************
 
@@ -333,16 +382,21 @@
   (declare (salience 60));
   (percepts Pull);Comprobamos si hay ruido cercano de un agujero de gusano
   (ultimoMovimiento west);Comprobamos que el último moviento realizado proviene del oeste
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
   ?id2 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
+      (retract ?id);Retractamos el hecho del número de movimientos
+
       (retract ?id1);Retractamos el hecho del último movimiendo
       (retract ?id2);Retractamos la posición donde estaba willy
       (assert (ultimoMovimiento east));Guardamos hacia donde se ha movido Willy
       (assert (casilla-actual (+ ?x 1) ?y));Actualizamos hacia la casilla que se ha movido Willy
       (moveWilly east);Movemos a Willy hacia el este
+      (assert (numeroMovimientos (+ ?m 1)))
+
 )
 ;*****************************************************************************
 
@@ -356,17 +410,22 @@
   (declare (salience 60));
   (percepts Noise);Comprobamos si hay ruido cercano de un monstruo
   (ultimoMovimiento north);Comprobamos que el último movimiento proviene del norte
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
   ?id2 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
+      (retract ?id);Retractamos el hecho del número de movimientos
+
       (retract ?id1);Retractamos el hecho del último movimiendo
       (retract ?id2);Retractamos la posición donde estaba willy
 
       (assert (ultimoMovimiento south));Guardamos hacia donde se ha movido Willy
       (assert (casilla-actual ?x (- ?y 1)));Actualizamos hacia la casilla que se ha movido Willy
       (moveWilly south);Movemos a Willy hacia el sur
+      (assert (numeroMovimientos (+ ?m 1)))
+
   )
 ;*****************************************************************************
 
@@ -377,17 +436,22 @@
   (declare (salience 60));
   (percepts Noise);Comprobamos si hay ruido cercano de un monstruo
   (ultimoMovimiento south);Comprobamos que el último movimiento proviene del sur
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
   ?id2 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
+      (retract ?id);Retractamos el hecho del número de movimientos
+
       (retract ?id1);Retractamos el hecho del último movimiendo
       (retract ?id2);Retractamos la posición donde estaba willy
 
       (assert (ultimoMovimiento north));Guardamos hacia donde se ha movido Willy
       (assert (casilla-actual ?x (+ ?y 1)));Actualizamos hacia la casilla que se ha movido Willy
      	(moveWilly north);Movemos a Willy hacia el norte
+      (assert (numeroMovimientos (+ ?m 1)))
+
 )
 ;*****************************************************************************
 
@@ -398,16 +462,21 @@
   (declare (salience 60));
   (percepts Noise);Comprobamos si hay ruido cercano de un monstruo
   (ultimoMovimiento east);Comprobamos que el último movimiento proviene del este
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
   ?id2 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
+      (retract ?id);Retractamos el hecho del número de movimientos
+
       (retract ?id1);Retractamos el hecho del último movimiendo
       (retract ?id2);Retractamos la posición donde estaba willy
       (assert (ultimoMovimiento west));Guardamos hacia donde se ha movido Willy
       (assert (casilla-actual (- ?x 1) ?y));Actualizamos hacia la casilla que se ha movido Willy
       (moveWilly west);Movemos a Willy hacia el oeste
+      (assert (numeroMovimientos (+ ?m 1)))
+
 )
 ;*****************************************************************************
 
@@ -418,16 +487,21 @@
   (declare (salience 60));
   (percepts Noise);Comprobamos si hay ruido cercano de un monstruo
   (ultimoMovimiento west);Comprobamos que el último movimiento proviene del oeste
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
   ?id2 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
+      (retract ?id);Retractamos el hecho del número de movimientos
+
       (retract ?id1);Retractamos el hecho del último movimiendo
       (retract ?id2);Retractamos la posición donde estaba willy
       (assert (ultimoMovimiento east));Guardamos hacia donde se ha movido Willy
       (assert (casilla-actual (+ ?x 1) ?y));Actualizamos hacia la casilla que se ha movido Willy
       (moveWilly east);Movemos a Willy hacia el este
+      (assert (numeroMovimientos (+ ?m 1)))
+
 )
 ;*****************************************************************************
 
@@ -443,17 +517,22 @@
   (declare (salience 62));
   (percepts Pull Noise);Comprobamos si hay ruido cercano de un monstruo y un agujero de gusano
   (ultimoMovimiento north);Comprobamos que el último movimiento proviene del norte
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
   ?id2 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
+      (retract ?id);Retractamos el hecho del número de movimientos
+
       (retract ?id1);Retractamos el hecho del último movimiendo
       (retract ?id2);Retractamos la posición donde estaba willy
 
       (assert (ultimoMovimiento south));Guardamos hacia donde se ha movido Willy
       (assert (casilla-actual ?x (- ?y 1)));Actualizamos hacia la casilla que se ha movido Willy
       (moveWilly south);Movemos a Willy hacia el sur
+      (assert (numeroMovimientos (+ ?m 1)))
+
   )
 ;*****************************************************************************
 
@@ -464,17 +543,22 @@
   (declare (salience 62));
   (percepts Pull Noise);Comprobamos si hay ruido cercano de un monstruo y un agujero de gusano
   (ultimoMovimiento south);Comprobamos que el último movimiento proviene del sur
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
   ?id2 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
+      (retract ?id);Retractamos el hecho del número de movimientos
+
       (retract ?id1);Retractamos el hecho del último movimiendo
       (retract ?id2);Retractamos la posición donde estaba willy
 
       (assert (ultimoMovimiento north));Guardamos hacia donde se ha movido Willy
       (assert (casilla-actual ?x (+ ?y 1)));Actualizamos hacia la casilla que se ha movido Willy
      	(moveWilly north);Movemos a Willy hacia el norte
+      (assert (numeroMovimientos (+ ?m 1)))
+
 )
 ;*****************************************************************************
 
@@ -485,16 +569,21 @@
   (declare (salience 62));
   (percepts Pull Noise);Comprobamos si hay ruido cercano de un monstruo y un agujero de gusano
   (ultimoMovimiento east);Comprobamos que el último movimiento proviene del este
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
   ?id2 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
+      (retract ?id);Retractamos el hecho del número de movimientos
+
       (retract ?id1);Retractamos el hecho del último movimiendo
       (retract ?id2);Retractamos la posición donde estaba willy
       (assert (ultimoMovimiento west));Guardamos hacia donde se ha movido Willy
       (assert (casilla-actual (- ?x 1) ?y));Actualizamos hacia la casilla que se ha movido Willy
       (moveWilly west);Movemos a Willy hacia el oeste
+      (assert (numeroMovimientos (+ ?m 1)))
+
 )
 ;*****************************************************************************
 
@@ -505,16 +594,21 @@
   (declare (salience 62));
   (percepts Pull Noise);Comprobamos si hay ruido cercano de un monstruo y un agujero de gusano
   (ultimoMovimiento west);Comprobamos que el último movimiento proviene del oeste
-
+  ?id <- (numeroMovimientos ?m)
   ?id1 <- (ultimoMovimiento ?);Recogemos el hecho donde se almacena la dirección del último movimiento
   ?id2 <- (casilla-actual ?x ?y);Recogemos la posición en la que Willy se encuentra
+  (test (< ?m 999));Comprobamos que no se ha superado el limite de movimientos
 
 =>
+      (retract ?id);Retractamos el hecho del número de movimientos
+
       (retract ?id1);Retractamos el hecho del último movimiendo
       (retract ?id2);Retractamos la posición donde estaba willy
       (assert (ultimoMovimiento east));Guardamos hacia donde se ha movido Willy
       (assert (casilla-actual (+ ?x 1) ?y));Actualizamos hacia la casilla que se ha movido Willy
       (moveWilly east);Movemos a Willy hacia el este
+      (assert (numeroMovimientos (+ ?m 1)))
+
 )
 ;*****************************************************************************
 
