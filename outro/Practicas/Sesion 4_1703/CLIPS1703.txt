@@ -1,0 +1,145 @@
+
+· Reglas 
+
+	Introduccion 
+
+	Definición 
+
+	Estructura 
+
+	Elemento Condicional patrón 
+
+		Hay 8 tipos patron, test, and, or, not, exists, forall y logical
+
+		El mas simple es aquel que está formado por literales 
+
+
+
+
+		· Restricciones literales 
+
+		( defrule encontrar-datos 
+		( datos 1 azul rojo ) => )	
+
+		f-2 ...
+		f-3 (datos 1 azul rojo) -> Emparejaría con este  
+		f-3 ... 
+
+		Este es el caso para la comparación de plantillas 
+
+		(defrule encontrar-juan ( persona (nombre juan) (edad 20))) -> Compara los datos que estan aqui aunque 
+																	   en el otro lado alla mas 
+		f-1 ...
+		f-2 ( persona ( nombre juan ) ( edad 20 ) ( amigos )) -> Encajaría con este aunque le falte el campo
+																 amigos
+		f-3 ...
+
+
+
+
+
+
+		· Restricciones con comodines de campo simple y de campo multiple (Falta campo simple) 
+
+		(defrule encontrar-datos )
+
+		(dato $? VERDE $?)
+
+		(dato VERDE rojo azul) -> 1er comodin campo vacio 
+								  VERDE empareja con VERDE
+								  2do comodin rojo y azul (al ser multicampo)
+
+
+
+
+
+
+		· Restricciones de variables monocampo y multicampo 
+
+		Ejemplo 1 
+
+			(defrule prueba
+
+		=>
+
+			(printout t ?x crlf)
+
+		)
+
+		; Error en la variable ya que no se le ha atribuido un valor ya que las variables en las reglas son 
+		; locales en las reglas 
+
+		Ejemplo 2 
+
+
+		(defrule encontrar-datos-triples)
+
+			(datos ?x ?y ?z)
+
+			=>
+
+			(printout t ?x ?y ?z)
+
+		)
+
+
+
+
+
+		· Restricciones de valor devuelto 
+
+		(defrule  doble 
+		(datos ( x ?x ) ( y = ( * 2 ?x ) ) ) => )
+
+		f-0 (datos (x 2) (y 4)) -> Emparejaría con este ya que se asigna a la x un 3 y a la y el doble de x o sea y = 2x
+		f-1 (datos (x 3) (y 9))	   y = 4  
+
+
+		Ejemplos sencillos 1 -> Foto en el movil 
+		Ejemplos sencillos 2 -> Foto en el movil 
+		Ejemplos sencillos 3 -> Foto en el movil 
+
+
+
+
+		· Restricciones conectivas 
+
+		Utilizan los conectores logicos and(&) or(|) y not (~)  
+
+		(defrule ejemplo1-1 ( datos-A ~azul) => )
+		(defrule ejemplo1-2 ( datos-B ( valor ~rojo&~verde )) => ) -> Es por plantilla (datos-B) ya que tiene un slot (valor)
+		(defrule ejemplo1-3 ( datos-B ( valor verde | rojo )) => )
+
+		(defrule regla1
+		
+			(dato (valor ?x&~rojo&~verde))
+		
+		=>
+		
+			(printout t "Valor: " ?x crlf)
+
+		)
+
+		Le liga a la variable el valor con la cual empareja (dto de rojo y verde) y luego compara
+
+
+
+
+
+		· Restriccion de predicado 
+
+		Devuelven un valor (TRUE or FALSE)
+
+		:<Llamada-funcion>
+
+		* Anotación: Hechos no ordenados == plantilla
+
+		Ejemplo 
+
+		(defrule predicado1 (datos ?x&: (numberp ?x)) => ) 
+
+		f-0 (datos 1)
+		f-1 (datos 2)
+		f-3 (datos verde)
+
+		Cumple con los hechos 0 y 1 ya que son los dos unicos hechos que son números

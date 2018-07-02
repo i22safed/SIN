@@ -1,0 +1,9 @@
+25/02
+
+* Al final de la semana se hará un informe que se evaluará a modo de tarea.
+* Definir hecho / reset / run 
+* Refractariedad una vez que se ha activado un hecho, este no se vuelve a activar 
+* Hacer el cuestionario de la practica 1 para la semana que viene un par de paginas 
+* La semana que viene hay cuestionario de hechos (temas de practicas 3, 4 y 5)
+  haremos problemas
+* Sobre hechos hay una relacion de problemas

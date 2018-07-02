@@ -1,0 +1,135 @@
+
+
+
+; Referencias:
+;
+;		· Tema 11 diapositivas de la asignatura
+;
+;		· Manual de referencia CLIPS
+
+; El alumno, asistirá a la sesión de prácticas con el libro o apuntes de Clips y estudiará  las funciones
+; que proporciona CLIPS, creando un ejemplo de cada una de ellas y elaborando un resumen del tema. Este
+; resumen se incorporará al cuaderno de prácticas y se subirá en la tarea el cuaderno completo.
+
+; - Poner un ejemplo de cada una de ellas
+; - Elaborar un resumen del tema
+
+
+; Funciones predicado
+;
+;		Funciones de tipos
+;
+;		(integerp<expresión>)
+;		(floatp<expresión>)
+;		(numberp<expresión>)
+;		(symbolp<expresión>)
+;		(stringp<expresión>)
+;		(lexemep<expresión>
+;		(evenp<expresión>)
+;		(oddp<expresión>)
+;		(multifieldp<expresión>)
+;
+;		Funciones aritmeticas
+;
+;		(eq<expresión> <expresión>+)
+;		(neq<expresión> <expresión>+)
+;		(= <expresión-num> <expresión-num>+)
+;		(<> <expresión-num> <expresión-num>+)
+;		(< <expresión-num> <expresión-num>+)
+;		(<= <expresión-num> <expresión-num>+)
+;		(> <expresión-num> <expresión-num>+)
+;		(>= <expresión-num> <expresión-num>+)
+;
+;
+;		Funciones lógicas
+;
+;		(and<expresión>+)
+;		(or<expresión>+)
+;		(not<expresión>)
+;
+;	Funciones multicampo
+;
+;	(create$ <expresión>*)
+;	(length$ <expr-multicampo>)
+;	(nth$ <expr-entera> <expr-multicampo>)
+;	(member$ <expresión> <expr-multicampo>)
+;	(subsetp<expr-multicampo> <expr-multicampo>)
+;	(subseq$<expr-multicampo> <exp-entera-inicio> <exp-entera-fin>)
+;
+;	(first$ <expr-multicampo>)
+;	(rest$ <expr-multicampo>)
+;	(explode$ <expr-cadena>)
+;	(implode$ <expr-multicampo>)
+;
+;	(insert$<expr-multicampo> <exp-entera> <expresión>+)
+;	(replace$<expr-multicampo> <exp-entera-inicio> <exp-entera-fin> <expresión>+)
+;
+;	(delete$<expr-multicampo> <exp-entera-inicio> <exp-entera-fin>)
+;
+;
+;
+;	Funciones de cadena
+;
+;	(str-cat<expresión>*)
+;	(sym-cat<expresión>*)
+;	(str-length<expr-cadena-o-símbolo>)
+;	(sub-string<expr-entera> <expr-entera> <expr-cadena>)
+;	(str-compare<expr-cadena-o-símbolo> <expr-cadena-o-símbolo>)
+;
+;
+;	Funciones de entrada y salida
+;
+;	(open<nombre-fichero> <nombre-lógico> <modo>)
+;
+;		Modos de lectura:
+;
+;			r -> solo lectura
+;			w -> solo escritura
+;			r+ -> lectura y escritura
+;			a -> solo añadir
+;			wb -> escritura binaria
+;
+;		(close[<nombre-lógico>])
+;		(printout<nombre-lógico> <expresión>*)
+;		(read[nombre-lógico>])
+;		(readline[nombre-lógico>])
+;
+;
+;	Funciones matemáticas
+;
+;
+;	(+ <expr-num> <expr-num>+)
+;	(-<expr-num> <expr-num>+)
+;	(* <expr-num> <expr-num>+)
+;	(/ <expr-num> <expr-num>+)
+;	(div <expr-num> <expr-num>+)
+;	(mod<expr-num> <expr-num>)
+;	(sqrt<expr-num>)
+;	(** <expr-num> <expr-num>)
+;	(round<expr-num>)
+;	(abs<expr-num>)
+;	(max<expr-num>+)
+;	(min<expr-num>+
+;
+;
+;	Funciones procedurales
+;
+;	(bind<variable> <expresión>*)
+;	(if<expresión> then<acción>* [else<acción>*])
+;
+;
+;	(switch<expr-prueba> <sentencia-caso> [<sentencia-defecto>])
+;			<sentencia-caso> ::= (case <expr-comparación>then<acción>*)
+;			<sentencia-defecto> ::= (default<acción>*)
+;
+;	(while<expresión> [do] <acción>*)
+;	(loop-for-count<rango> [do] <acción>*)
+;
+;		<rango> ::=
+;		<íncice-final> |
+;		(<variable> <índice-final>) |
+;		(<variable> <índice-inicio> <índice-final>)
+;		<índice-inicio> ::= <expr-entera>
+;		<índice-final> ::= <expr-entera>
+;
+;	(return[<expresión>]) (break)

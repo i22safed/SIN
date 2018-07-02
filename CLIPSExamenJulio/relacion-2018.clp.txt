@@ -210,7 +210,7 @@
 	(dato ?x&:(numberp ?x))
 	?h<-(todos-los-datos $?valores)
 	(not (todos-los-datos $? ?x $?))
-	(forall (dato ?y&:(numberp ?y)&:(< ?y ?x))
+	(forall (dato ?y&:(numberp ?y))
 		(todos-los-datos $? ?y $?))
 	=>
 	(retract ?h)

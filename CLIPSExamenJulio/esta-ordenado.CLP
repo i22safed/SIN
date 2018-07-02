@@ -34,6 +34,44 @@
 (deffacts vector 
 	
 	(vector v1 10 2 4 6 9)
+	(vector v2 1 5 6 10 20)
+	(vector v3 1 2 3 4 5 6 7)
 
+)
+
+(defrule ordena-vector
+
+	?h1<-(vector ?nombre $?cabeza ?x ?y&:(> ?x ?y) $?cola)	
+	=>
+	(retract ?h1)
+	(assert (vector ?nombre $?cabeza ?y ?x $?cola))
+
+)
+
+
+; ====================================================================
+
+
+; Unir los hechos numericos
+
+(deffacts hechos 
+
+	(dato 1)
+	(dato 2)
+	(dato verde) 
+	(dato pascual)
+	(todos-datos)
+	
+)
+
+
+(defrule insertar-datos
+
+	(dato ?x&:(numberp ?x))
+	?h<-(todos-datos $?valores)
+	(not (todos-datos $? ?x $?))
+	=> 
+	(retract ?h)
+	(assert (todos-datos ?x $?valores))
 
 )

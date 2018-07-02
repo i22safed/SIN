@@ -1,0 +1,96 @@
+;2.- Haz un programa que dado un conjunto de hechos de tipo datos
+;    con un número indefinido de valores, detecte e imprima
+;    aquellos tal que el primer valor sea par y menor o igual
+;    al último.
+;===================================================================
+;3.- Haz un programa que dado un único hecho datos con un número
+;    indefinido de valores (ejemplo: (datos hola 1 3 nuevo 1 adios)),
+;    elimine todas las apariciones del valor 1.
+;===================================================================
+;4.- Haz un programa que detecte e imprima los hechos
+;   (vector <nombreVector> ...) que contengan los
+;    valores 3 y 4 en alguna posición, y que entre éstos
+;    haya un numero impar de valores. Se debe utilizar la
+;    función length$ (ver documentación).
+;    ver https://www.csie.ntu.edu.tw/~sylee/courses/clips/rhs.htm
+;===================================================================
+;5.- Haz un programa que dado un único hecho datos con un número
+;    indefinido de valores, elimine los que no sean numéricos.
+;===================================================================
+;	6.	Haz un programa que dado un conjunto de hechos
+;(vector <nombreVector> <val1> ... <valN>), detecte aquellos
+;hechos cuyos valores no están ordenados de menor a mayor e
+;imprima el mensaje “El vector <nombreVector> no está ordenado”.
+;Se entenderá que en la base de hechos no habrá dos hechos
+;vector con mismo nombre de vector.
+;===================================================================
+; 7.-	Haz un programa que dado un conjunto de hechos de la
+;     forma (dato 1), (dato 5), (dato verde)..., cree un único hecho
+;     (todos-los-datos ...) con todos los valores de los hechos
+;     anteriores.
+;===================================================================
+;8.- Haz un programa que dado un conjunto hechos
+     (vector <nombreVector> <val1> ... <valN>)
+     con valores numéricos, ordene sus valores de menor a mayor.
+;===================================================================
+; 9.- Haz un programa que resuelva el ejercicio 7 pero
+;     sin eliminar los hechos (dato 1), (dato 5), (dato verde)....
+;    (Se presupone un único hecho todos-los-datos)
+;===================================================================
+; 10.-	Haz un programa que dado un conjunto de hechos de tipo dato
+        y un único valor numérico, imprima los valores numéricos
+        por pantalla de menor a mayor. Vigila que el programa
+        funciona correctamente incluso con la estrategia de ejecución
+        de reglas Random.
+;===================================================================
+; 11.- Haz un programa que resuelva el ejercicio 9, pero que sólo
+       utilice los hechos con valores numéricos y los inserte de
+       forma ordenada (de menor a mayor) en el hecho todos-los-datos.
+       (Se presupone un único hecho todos-los-datos)
+;===================================================================
+; 12.- Haz un programa que calcule el factorial de un número,
+       de manera que ante un hecho (factorial 3), muestre por
+       pantalla el mensaje “El factorial de 3 es 6”.
+;===================================================================
+;13.-	Una planta industrial tiene diez sensores identificados
+;	por un código numérico entre 1 y 10. Cada sensor puede
+;	encontrarse en un estado correcto o incorrecto. Escribe
+;	una plantilla que permita representar la información relativa
+;	a los sensores y un conjunto de reglas que imprima un mensaje
+;	de advertencia si tres o más sensores se encuentran en un
+;	estado incorrecto. Sólo debe mostrarse un mensaje de error
+;	aunque haya más de tres sensores en estado incorrecto.
+;===========================================================
+;14.- Escribe un programa para ayudar a una persona a decidir qué plantas
+;     podría plantar. La siguiente tabla indica las características de una
+;     serie de plantas (tolerancia al frío, tolerancia a la sombra,
+;     tolerancia al clima seco...). La entrada al programa debe
+;     consistir en un conjunto de hechos
+;     (característica-deseada <característica>) que indiquen
+;     características que se desee que tenga una planta.
+;     El programa debe mostrar por pantalla el nombre de las plantas
+;     que cuenten con las características indicadas, aunque aparte de
+;     esas cuenten con otras características
+;=====================================================================
+; 15.- Haz un programa en base a la información del ejercicio
+;      anterior, pero ahora se imprimirán sólo aquellas plantas
+;      que cumplan exactamente con todas las características
+;      deseadas (no puede contener otras características)
+;=====================================================================
+;16.-	Complementa el ejercicio 8 para que también se detecten
+     los vectores que sí están ordenados. Es decir, sin modificar los
+     hechos ni crear hechos auxiliares, se debe imprimir un mensaje
+     por cada vector (vector <nombreVector> <val1> ... <valN>),
+     indicando si sus elementos están ordenados o no.
+     Se entenderá que en la base de hechos no habrá dos
+     hechos vector con mismo nombre de vector.
+;=====================================================================
+;17.	Haz un programa que dado un único hecho vector con un
+;    número indefinido de valores numéricos, imprima el valor que se
+;    sitúa justo en medio, o la media de los dos valores de
+;    en medio.
+;=====================================================================
+;18.-	Haz un programa que dado un único hecho vector, detecte si sus
+;    valores se repiten de forma simétrica. Siempre que la salida sea
+;    correcta, puedes modificar el vector o utilizar hechos auxiliares.
+;    Lo siguiente es una posible solución entre muchas posibilidades
