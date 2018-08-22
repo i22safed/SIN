@@ -127,10 +127,6 @@
 
 ;===================================================================
 
-
-
-
-
 ; 9.- Haz un programa que resuelva el ejercicio 7 pero
 ;     sin eliminar los hechos (dato 1), (dato 5), (dato verde)....
 ;    (Se presupone un único hecho todos-los-datos)

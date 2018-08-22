@@ -1,3 +1,4 @@
+﻿;===================================================================
 ;2.- Haz un programa que dado un conjunto de hechos de tipo datos
 ;    con un número indefinido de valores, detecte e imprima
 ;    aquellos tal que el primer valor sea par y menor o igual
