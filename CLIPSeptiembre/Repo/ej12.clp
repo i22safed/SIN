@@ -26,6 +26,6 @@
 	(mostrar ?x&:(eq ?x 0))
 	(fact ?y ?z)
 	=> 
-	(printout t clrf "El factorial de " ?y " es: " ?z clrf)
+	(printout t clrf "El factorial de " ?y " es: " ?z crlf)
 
 )
