@@ -1,0 +1,59 @@
+Tema 8: Modulos.
+
+Idema principal: agrupar reglas en diferentes modulos.
+Hasta ahora CLIPS utilizaba un unico modulo llamado MAIN.
+En cada momento solo estaria un modulo activo. 
+Si alguna regla quiere que el siguiente modulo activo sea X, el sistema pasa a mirar la agenda del modulo X.
+
+CLIPS mantiene una pila de modulos. Al principio solo modulo main.
+alguna regla -> (focus A): se inserta en la pila el modulo A.
+alguna regla -> (return): este modulo se elimina de la pila
+Algun modulo deja de tener reglas activas, el modulo sale de la pila.
+
+(defmodule <nombre-del-módulo> [<commentario>]
+	<especificación-portabilidad>*)
+
+
+EJ: 
+
+;(defmodule MAIN (export deftemplate initial-fact))  ;para que exporte el initial-fact al resto
+(defmodule MAIN (export ?ALL))
+
+(defrule insertaModulos
+	=>
+	(focus A C)) ; se inserta en la pila de atras hacia adelante
+(defmodule A (import MAIN ?ALL)) 
+(defrule soyDelA
+	=>
+	(printout t "Modulo A!" crlf)
+	(focus B))
+
+(defmodule B (import MAIN deftemplate initial-fact))
+(defrule soyDelB
+	=>
+	(printout t "Modulo B!" crlf)
+	(return))
+
+(defmodule C (import MAIN ?ALL))
+(defrule soyDelC
+	=>
+	(printout t "Modulo C!" crlf))
+
+
+
+
+Tema 9: Funciones.
+
+deffunction compuesto:
+	nombre
+	comentario
+	lista parametros
+	parametro comodin
+	secuencia acciones
+
+Debe tener un nombre unico
+Deber ser deckarada antes de llamarla
+Puere haber recursividad
+
+Ayuda -> Function summary -> Procedural Functions (Aqui estan los if, bucles, ...)
+

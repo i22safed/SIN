@@ -1,0 +1,21 @@
+--- (cardinality 3 20)  //numero valores que puede tener un multicampo
+--- (range 3 20) //rango que se puede mover un numero
+
+
+(deftemplete persona
+	(slot nombre)
+	(slot dni)
+	(slot dni-madre)
+	)
+
+(deffact personas
+	(persona (nombre PEPA) (dni 1111))
+	(persona (nombre ANdrea) (dni 2222) (dni-madre 3333))
+	(persona (nombre Marta) (dni 3333) (dni-madre 1111))
+	)
+
+(defrule madrede
+	(persona (nombre ?x) (dni ?y) (dni-madre ?z))
+	(persona (nombre ?x2) (dni-madre ?z) )
+	=>
+	(printout t ?x " es madre de  " ?x2 crlf))

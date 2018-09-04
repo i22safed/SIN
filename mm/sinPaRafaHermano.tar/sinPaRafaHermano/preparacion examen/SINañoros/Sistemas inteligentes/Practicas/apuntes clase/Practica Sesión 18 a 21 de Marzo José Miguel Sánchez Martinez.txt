@@ -1,0 +1,144 @@
+Practica "Sesión 18 a 21 de Marzo". José Miguel Sánchez Martinez
+
+
+Restricciones predicado
+
+–(evenp <arg>)
+–(floatp<arg>)
+–(integerp<arg>)
+–(numberp<arg>)
+–(oddp<arg>)
+–(stringp<arg>)
+–(symbolp<arg>)
+
+–(eq<expression> <expression>+)
+–(neq<expression> <expression>+)
+–(= <numeric-expression> <numeric-expression>+)
+–(<> <numeric-expression> <numeric-expression>+)
+–(> <numeric-expression> <numeric-expression>+)
+–(< <numeric-expression> <numeric-expression>+)
+–(>= <numeric-expression> <numeric-expression>+)
+–(<= <numeric-expression> <numeric-expression>+)
+
+ejemplo:
+(deffacts hechos
+(datos 3 4 8 9 1 3)) //se quiere eliminar el 3
+
+(defrule eliminaprimero
+	?h1<-(daots ?x $?y)
+	=>
+	(retract ?h1)
+	(assert (datos $?y))
+	)
+
+EC test:
+El EC test comprueba el valor devuelto por una función
+El EC test se satisface si la función devuelve un valor que no sea FALSE
+
+<EC-test> ::= (test <llamada-a-función>)
+
+(defrule diferencia
+	(dato ?x)
+	(valor ?y)
+	(test (>= (abs (- ?x ?y)) 3))  //diferencia "x" "y"  es mayor igual que 3
+	=> )
+
+El EC or se satisface si se satisface cualquiera de los EC que lo componen
+El EC and se satisface si se satisfacen todos los EC que lo componen
+El EC not se satisface si no se satisface el EC que contiene
+
+
+(deffacts hechos
+	(datos 1 2)
+	(datos 2 1))
+(defrule prueba
+	(not (datos ?x ?y&:(> ?y ?x)))   //no se activa porque alguno de los hechos datos hace verdadero lo de dentro
+	=> )
+//al quitar el primer hecho, la regla se activa para el initial fact "," (algo) 
+
+
+ej: mayor de los numeros (valor para el cual no esxiste otro mas grande)
+(deffacts hechos
+	(datos 3 4 8 9 1 3))
+(defrule prueba 
+	(datos $? ?x $?)
+	(not (datos $? ?y&:(< ?x ?y) $?))
+	=>
+	(printout t ?x crlf)
+	)
+//busca un X para el cual no hay otro Y mayor que X
+(deffacts hechos
+	(dato 3)
+	(dato 5))
+(defrule prueba 
+	(dato ?x)
+	(not (dato ?y&:(< ?x ?y)))
+	=>
+	(printout t ?x crlf)
+	)
+
+
+ej: Lista de datos y quiero imprimirlos en orden
+(deffacts hechos
+	(datos 3 4 8 9 1 3))
+(defrule prueba 
+	?h1<-(datos $?a ?x $?b)
+	(not (datos $? ?y&:(< ?x ?y) $?))
+	=>
+	(printout t ?x crlf)
+	(retract ?h1)
+	(assert (datos $?a $?b))
+	)
+
+ej: con datos sueltos.
+(deffacts hechos
+	(dato 3)
+	(dato 9)
+	(dato 5)
+	(dato 2)
+	(dato 1))
+(defrule prueba
+	?h1<-(dato ?x)
+	(not (dato ?y&:(> ?x ?y)))
+	=>
+	(printout t ?x crlf)
+	(retract ?h1)
+	)
+
+
+ej: sin borrar los datos, creamos auxiliares
+
+(deffacts hechos
+	(dato 3)
+	(dato 9)
+	(dato 5)
+	(dato 2)
+	(dato 1))
+
+(defrule copia
+	(dato ?x)
+	=>
+	(assert (auxdato ?x))
+	)
+
+(defrule prueba
+	(todos copiados)
+	?h1<-(auxdato ?x)
+	(not (auxdato ?y&:(> ?x ?y)))
+	=>
+	(printout t ?x crlf)
+	(retract ?h1)
+	)
+
+
+(defrule todosCopiados
+	(not (and (dato ?x) (not (auxdato ?x))))
+	=> 
+	(assert (todos copiados)))
+
+;para borrar el hecho todos copiados
+(defrule fin
+	?h1<-(todos copiados)
+	(not (auxdato ?x))
+	=>
+	(retract ?h1))

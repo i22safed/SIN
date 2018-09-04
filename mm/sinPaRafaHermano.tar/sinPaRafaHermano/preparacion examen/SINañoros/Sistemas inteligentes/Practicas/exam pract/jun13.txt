@@ -1,0 +1,42 @@
+(deftemplate bloque
+	(slot id)
+	(slot encima-de)
+)
+
+(deffacts hechos
+	(bloque (id b1) (encima-de b2))
+	(bloque (id b2) (encima-de b1))
+	(bloque (id b3) (encima-de mesa))
+	(bloque (id b4) (encima-de b2))
+	(bloque (id 3) (encima-de asd))
+)
+
+(defrule ejer1
+	(bloque (id ?id) (encima-de ?e))
+	(and
+		(not (bloque (id ?e)))
+		(test (neq ?e mesa))
+	)
+	=>
+	(printout t "El bloque " ?id " esta encima de algo que no es otro bloque o la mesa" crlf)
+)
+
+(defrule ejer2 ;no me gusta molto (lo dice 2 veces)
+	(bloque (id ?id))
+	(exists
+		(bloque (id ?id))
+		(bloque (id ?id1&~?id) (encima-de ?id))
+		(bloque (id ?id2&~?id&~?id1) (encima-de ?id)))
+	=>
+	(printout t "El bloque " ?id " tiene mas de un bloque encima" crlf)
+)
+
+(defrule ejer3  ;no me convence (lo dice 2 veces)
+	(bloque (id ?id1) (encima-de ?id2))
+	(exists
+		(bloque (id ?id2))
+		(bloque (id ?id1) (encima-de ?id2))
+		(bloque (id ?id2) (encima-de ?id1)))
+	=>
+	(printout t "Entre los bloques " ?id1 " y " ?id2 " hay ciclo" crlf)
+)

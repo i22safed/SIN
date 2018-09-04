@@ -1,0 +1,103 @@
+Práctica I. Conocimiento y representación del Conocimiento en CLIPS
+José Miguel Sánchez Martínez
+
+
+Sistema de produccion: representacion de conocimientos populares.
+Reglas de produccion: reglas del tipo SI-Entonces. (antecedente => consecuente)
+
+Componentes principales sistemas de produccion:
+	- Base de afirmaciones: "bloc de notas" donde se almacenas las cosas o hechos
+	- Base de conocimientos: contiene las reglas de produccion
+	- Motor de inferencia: mira si hay alguna regla cierta y la ejecuta.
+
+Los sistemas funcionan por iteraciones, en cada iteraccion solo pueden ejecutar una regla.
+Inferencia: miro los datos, compruebo antecedenties y si se cumple alguno, ejecuto su regla correspondiente.
+
+Ejecutar programa en CLIPS:
+1. Clear: borra hechos + reglas
+2. Load Buffer: carga programa
+3. Reset: borra base de afirmaciones
+4. Run: ejecuta programa
+
+Elementos basicos:
+	- Tipos de datos: representan informacion. entero, cadena, simbolo, direccion de hecho, ...
+		Valores multicampo o unicampo.
+	- Funciones: manupulan los datos.
+	- Constructores: añade conocimiento a la base de conocimiento.
+	
+Variables:
+	- ?<nombre> local monocampo
+	- $?<nombre> local multicampo
+	- ?*<nombre>* global multicampo/monocampo
+	
+Funciones:
+	(nombrefun argumentos)
+	
+Ejemplos de programas en CLIPS.
+
+//imprime hola por pantalla
+(defrule hola
+	=>
+	(printout t
+		"Hola!!"
+		crlf) //crlf: hace salto de linea
+	)
+
+
+//bucle infinito diciento hola
+(deffact hechos
+	(hola))
+(defrule hola
+	?h1<-(hola) //direccion de un hecho (hola)
+	=>
+	(printout t
+		"Hola!!"
+		crlf)
+	(retract ?h1) //si hay un hecho hola, se elimina
+	(assert (hola)) // afirma otro nuevo hecho hola
+	)
+
+
+//Dice hola si ponemos antes (assert (hola))
+(defrule hola
+	?h1<-(hola)
+	=> (printout t
+	"hola jmi" crlf)
+	)
+
+//dice hola o adios si se lo pedimos
+(defrule hola
+	?h1<-(hola)
+	=> (printout t
+	"hola jmi" crlf)
+	(retract ?h1)
+	)
+(defrule adios
+	?h2<-(adios)
+	=> (printout t
+	"adios jmi" crlf)
+	(retract ?h2)
+	)
+
+//se crea una regla "hola", otra "no tengo tiempo", otra "adios"
+//si decimos hola, ira encadenando los hehcos hola, tiempo y adios cons sus respectivos mensajes
+(defrule hola
+	?h1<-(hola)
+	=> (printout t
+	"hola jmi" crlf)
+	(retract ?h1)
+	(assert (tiempo))
+	)
+(defrule notiempo
+	?h2<-(tiempo)
+	=> (printout t
+	"no time" crlf)
+	(retract ?h2)
+	(assert (adios))
+	)
+(defrule adios
+	?h3<-(adios)
+	=> (printout t
+	"adios jmi" crlf)
+	(retract ?h3)
+	)

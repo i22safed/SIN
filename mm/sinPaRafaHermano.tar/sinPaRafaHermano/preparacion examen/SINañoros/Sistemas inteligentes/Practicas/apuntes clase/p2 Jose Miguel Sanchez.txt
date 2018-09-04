@@ -1,0 +1,82 @@
+Practica 2: HECHOS  Jose Miguel Sanchez Martinez
+
+
+Tema 3: Representacionde hechos,
+
+Tipos de hechos: 
+	- Ordenados: si cambio de posicion sus valores, se hace un hecho diferente.
+	- No ordenados(hechos plantillas): el orden en el que aparecen los campos no implica que sea otro hechos diferente
+	tienen campos dentro de si delimitados por parentesis.
+	Se crea antes una plantilla (parecido a un "struct").
+
+EJ:
+(assert(hola))
+(assert(hola Mundo))  //
+(assert(Mundo hola))  //A pesar de tener las mismas palabras se carga por ser distinto(hechos ordenados)
+(assert(hola))
+
+(deftemplate prueba       //define la plantilla para un tipo de hecho no ordenado
+	(slot campo1)
+	(slot campo2)
+	)
+
+(assert(prueba (campo1 hola) (campo2 Mundo))) //dice TRUE
+(assert(prueba (campo2 Mundo) (campo1 hola))) //dice FALSE (es el mismo hecho aunque cambiado de orden)
+
+
+Hechos no ordenados:
+	- Modify: cambiar algun dato de un hechos no ordenado
+	EJ: (modify 3 (campo1 adios)) //el 3 es el numero de hecho.
+	-Duplicate: copia un hecho y modificando algo.
+	EJ: (duplicate 4 (campo1 hola)) // el 4 es numero de hecho.
+
+Diferencias entre (reset) y (retract *)
+reset pone el hecho initial-fact, añade hechos puestos con deffacts y reinicia la cuenta de hechos, retract * no
+
+al crear hechos, clips reconoce la primera palabra como la "relacion entre elemenos"
+EJ: (nombre-relacion campo1 campo2 ...) // (llista-compra leche pan huevos)
+
+Tema 4: Hechos definidos a partir de plantillas
+
+Constructor deftemplate:
+(deftemplate <nombre> [<comentario>]
+	<definición-casilla>*)
+
+<def-simple> ::= (slot<nombre-casilla> <atributo>*) //solo un campo
+<def-múltiple> ::= (multislot<nombre-casilla> <atributo>*) //mas de un campo
+
+EJ:
+
+(deftemplate persona
+	(multislot nombre)
+	(slot edad)
+	)
+(assert(persona (nombre Jose Miguel) (edad 20))) 
+
+
+
+Si se hacen dos deftemplate al mismo nombre, se machaca el segundo.
+Al borrar una plantilla hay que asegurarse que no tiene hechos asociados.
+
+(assert (persona (edad 20))) //le asigna a nombre la lista vacia por ser multislot
+(assert (persona (nombre jose miguel))) // le asigna a edad nil (slot)
+
+dar valor por defecto ej:
+(deftemplate persona
+	(multislot nombre (default ?NONE)) //campo obligatorio
+	(slot edad (default 20)) //por defecto un 20 si no se pone
+	)
+
+Esfecificar valores;
+	- allowed-symbols hola adios
+	- allowed-strings "ee"
+	- allowed-numbers 1 2 3
+	......
+EJ:
+(deftemplate persona
+	(multislot nombre (default ?NONE)
+		(type SYMBOL STRING)
+		(allowed-symbols sinNombre))
+	(slot edad)
+	)
+

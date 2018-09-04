@@ -1,0 +1,71 @@
+//imprime hola por pantalla
+(defrule hola
+	=>
+	(printout t
+		"Hola!!"
+		crlf)
+	)
+
+
+//bucle infinito diciento hola
+(deffact hechos
+	(hola))
+(defrule hola
+	?h1<-(hola)
+	=>
+	(printout t
+		"Hola!!"
+		crlf)
+	(retract ?h1)
+	(assert (hola))
+	)
+
+//programar sistema que diga hola y nuestro nombre
+(defrule hola
+	=> (printout t
+	"hola jmi" crlf)
+	)
+
+
+//Dice hola si ponemos antes (assert (hola))
+(defrule hola
+	?h1<-(hola)
+	=> (printout t
+	"hola jmi" crlf)
+	)
+
+//dice hola o adios si se lo pedimos
+(defrule hola
+	?h1<-(hola)
+	=> (printout t
+	"hola jmi" crlf)
+	(retract ?h1)
+	)
+(defrule adios
+	?h2<-(adios)
+	=> (printout t
+	"adios jmi" crlf)
+	(retract ?h2)
+	)
+
+//una regla hola, otra "no tengo tiempo", otra "adios"
+(defrule hola
+	?h1<-(hola)
+	=> (printout t
+	"hola jmi" crlf)
+	(retract ?h1)
+	(assert (tiempo))
+	)
+(defrule notiempo
+	?h2<-(tiempo)
+	=> (printout t
+	"no time" crlf)
+	(retract ?h2)
+	(assert (adios))
+	)
+(defrule adios
+	?h3<-(adios)
+	=> (printout t
+	"adios jmi" crlf)
+	(retract ?h3)
+	)

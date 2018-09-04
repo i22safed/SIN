@@ -1,0 +1,168 @@
+Practica Dia 4 - Introducción a Reglas (EC patrón)
+
+
+(deffacts personas
+	(es-persona pepe)
+	(es-persona Andrea)
+	)
+
+Muestra los nombres de los conjuntos de hechos definidos
+(list-deffacts)
+
+Eliminar la definicion de un conjunto de hechos
+(undefacts personas)
+
+Ver la definicion de un conjunto de hechos
+(ppdeffacts personas)
+
+
+Partes de la regla:
+–Antecedente (condiciones)
+–Consecuente (acciones)
+
+Si el antecedente es cierto, se podran ejecutar las accciones del consecuente
+
+
+//ejemplo
+
+(defrule FrigorificoMal
+“Qué pasa si usamos mal el frigorífico”
+(frigorifico luz encendida)
+(frigorifico puerta abierta)
+=>
+(assert (frigorifico comida estropeada)))
+
+Si se cumplen las dos condiciones se ejecuta la accion assert
+Si hay varias condiciones en una regla, se tienen que cumplir todas para que se active
+
+Dos reglas iguales -> la nueva machaca la antigua
+si no hay elemento condicional, CLIPS utiliza el "initial-fact"
+
+//ejemplo
+(defrule holaMundo
+	=>
+	(printout t "hola mundo!" crlf)
+	)
+Para que funcione necesita un reset o un (assert(initial-fact))
+
+Conceptos:
+
+Una regla puede activarse para distintos conjuntos de hechos (instancias de una regla)
+la ejecucion de una regla puede cambiar la agenda y se recalcula
+
+//ejemplo
+
+(defrule prueba
+	(hola)
+	=>
+	(printout t "hola" crlf)
+	)
+
+(deftemplate persona
+	(slot nombre)
+	(slot edad)
+	)
+
+(deffacts personas
+	(hola)
+	(persona (nombre carlos) (edad 13))
+	(persona (nombre Marta) (edad 33))
+	(persona (nombre Pedro) (edad 33))
+	)
+
+(defrule encuentrapersona
+	(persona (edad 33)) 
+	=>
+	(printout t "Persona encontrada" crlf)
+	)
+
+//La agenda muestra las instancias de las regals que se cumplen
+//(run n) CLIPS realiza n iteraciones
+
+
+
+Sintaxis del antecedente:
+El antecedente se compone de una serie de Elementos Condicionales (EC).
+- Consiste en un conjunto de restricciones
+- Se usan para verificar si se cumple un campo o slot de una entidad patrón
+
+Restricciones con comodines
+Indican que cualquier valor en esa posición de la entidad patrón es válido para emparejar con la regla.
+Tipos:
+– Comodín monocampo: ? necesita un valor exactamente
+– Comodín multicampo: $? necesita 0 o mas valores
+
+/ejemplo
+(defrule prueba
+	(hola $?) => ) //este coge hola y 0 o mas campos o (hola ?) necesita hola y un campo
+
+(deffacts hechos
+	(hola)
+	(hola carlos)
+	(hola 3)
+	(hola 3 4))
+
+
+//ejemplo
+(defrule prueba1
+	(hola $? ?) =>)
+
+(defrule prueba2
+	(hola $? ? ?) =>)
+
+(defrule prueba0
+	(hola $?) =>)
+
+(deffacts hechos
+	(hola)
+	(hola carlos)
+	(hola 3 4 5 2 1 0)
+	(hola 3 carlos)
+	(hola "hola" "que pasa"))
+
+
+
+//(hola $? ?) //necestia un campo minimo
+//(hola ? $?)  es lo mismo!
+
+(hola ? ? ?) //tres valores
+(hola ? 3 ?) //tres valore y el de en medio un 3
+(hola ? ? 3 $?) // tres valores o mas y el tercero un 3
+(hola $? 3 $?) // un 3 en algun sitio
+
+//ejemplo
+(defrule prueba
+	(hola $? 3 $? 4 $?) =>)
+
+(deffacts hechos
+	(hola 3 4)
+	(hola 4 3)
+	(hola 1 5 6 9 8 4 2 3 4 8 4 2)
+
+
+(hola ?x ?x)  //hecho hola con dos valores iguales
+(hola ?x ?y ?z ?z ?y ?x)
+
+
+(defrule prueba
+	(hola ?x)
+	(adios ?x)
+	=>
+	(printout "hola " ?x crlf))
+
+Renstricciones conectivas (and, or, not)
+Utilizan los conectores lógicos & (and), | (or), ~ (not)
+
+
+(defrule predicado1 (datos ?x&:(numberp ?x)) => )
+nos da verdadero si lo que recibe como argumento es un numero
+
+
+//Regla que se active para echos tipo datos con dos valores y que el segundo se a mayor que el primero
+(defrule menor
+	(datos ?x&:(numberp ?x) ?y&:(numberp ?y)&:(< ?x ?y))  //se pone & cono AND para encadenar
+	=>)
+(deffacts datos
+	(datos 1 2)
+	(datos 4 2))
+

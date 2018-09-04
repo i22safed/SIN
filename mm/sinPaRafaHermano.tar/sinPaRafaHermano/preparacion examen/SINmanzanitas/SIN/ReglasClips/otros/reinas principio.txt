@@ -1,0 +1,10 @@
+(defrule situaReina
+	(fila ?x)
+	(columna ?y)
+	(not (reina ?x ?)) ;No hay una reina en la misma fila 
+	(not (reina ? ?y)) ;No hay una reina en la misma columna
+	(not (reina ?x2 ?y2&:(= (- ?x2 ?y2) (- ?x ?y)))) ;Que no hayan en la misma diagonal creciente
+	(not (reina ?x2 ?y2&:(= (+ ?x2 ?y2) (+ ?x ?y)))) ;Que no hayan en la misma diagonal decreciente
+	=>
+	(assert (reina ?x ?y)) ;Siendo x e y las coordenadas (filas y columnas) de la nueva reina
+)

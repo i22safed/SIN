@@ -1,0 +1,218 @@
+Jose Miguel Sanchez Martinez
+
+EC not
+El EC not se satisface si no se satisface el EC que contiene
+
+EC exists
+Permite comprobar si una serie de ECs se satisface por algún conjunto de hechos
+Solo recibe una activacion independientemente de los datos que cumplan el padtron
+no se puede utilizar una variable de un exists
+
+(deffacts hechos
+	(datos)
+	(datos 1)
+	(datos 1 2))
+(defrule pruebaExists
+	(exists (datos $? ?x $?)) 
+	=>
+	)
+(defrule pruebaExiststs
+	(datos $?)
+	=>
+	)
+
+
+
+EC forall
+Permite comprobar si un conjunto de EC se satisface para toda ocurrencia de otro EC especificado
+Se satisface si, para toda ocurrencia del primer EC, se satisfacen los demás ECs
+
+(defrule todos-limpios
+(forall (estudiante ?nombre)
+	(lengua ?nombre)
+	(matematicas ?nombre)
+	(historia ?nombre)) 
+	=> )
+// para todo x se tiene que cumplir las otras 3
+
+
+EC logical
+Asegura el mantenimiento de verdad para hechos creados mediante reglas que usan EC logical
+
+
+(defrule puedo-pasar
+	(logical (semaforo verde))
+	=>
+	(assert (puedo pasar)))
+
+si quito el assert semaforo verde, me desapareceria el hecho puedo pasar
+
+
+REGLAS:
+
+(ppdefrule <nombre-regla>)  //muestra la definicion de la regla
+(list-defrules[<nombre-módulo> | *])   //muestra las regals definidas
+(undefrule<nombre-regla> | *)   // elimina una regla
+
+
+Problema de las 8 reinas:
+
+(deffacts hechos
+	(fila 1)(fila 2)(fila 3)(fila 4)(fila 5)(fila 6)(fila 7)(fila 8)
+	(col 1)(col 2)(col 3)(col 4)(col 5)(col 7)(col 7)(col 8))
+(defrule creaReina
+	(fila ?f)
+	(col ?c)
+	;No exista reina en ?f
+	(not (reina ?f ?))
+	(not (reina ? ?c))
+	(not (reina ?f2 ?c2&:(= (+ ?f2 ?c2) (+ ?f ?c))))
+	(not (reina ?f2 ?c2&:(= (- ?f2 ?c2) (- ?f ?c))))	
+	=>
+	(assert (reina ?f ?c)))
+
+----------------------------------
+
+
+
+(deftemplate reina
+	(slot id)  ;Id de la reina
+	(slot fila) ;Filas
+	(slot ds);Diagonal suma 
+	(slot col);columnas
+	(slot dr) ;Diagonal resta
+	(slot pid)
+	(slot depth)
+	(multislot ancestros)
+)
+
+(deffacts hechos
+	(fila 1) (fila 2) (fila 3) (fila 4)
+	(fila 5) (fila 6) (fila 7) (fila 8) 
+	(col 1) (col 2) (col 3) (col 4)
+	(col 5) (col 6) (col 7) (col 8) 
+	(nextId 1) (frontera 0)
+	(reina (id 0) (depth 0)(ancestros 0))
+)
+
+(defrule posicionNuevaReina
+	?h1<-(frontera ?id $?resto)
+	(reina (id ?id) (ancestros $?ancesPadre) (depth ?depthPadre))
+	(fila ?f) (col ?c)
+	?h2<- (nextId ?newId)
+	(not (and (reina (id ?id) (ancestros $? ?anc  $?)) (reina (id ?anc) (fila ?f))))
+	(not (and (reina (id ?id) (ancestros $? ?anc  $?)) (reina (id ?anc) (col ?c))))
+	(not (and (reina (id ?id) (ancestros $? ?anc  $?)) (reina (id ?anc) (ds =(+ ?f ?c)))))
+	(not (and (reina (id ?id) (ancestros $? ?anc  $?)) (reina (id ?anc) (dr =(- ?f ?c)))))
+	=>
+	(retract ?h1)
+	(retract ?h2)
+	(assert (frontera ?newId ?id $?resto) (nextId (+ ?newId 1)))
+	(assert (reina (id ?newId) (fila ?f)
+		(col ?c) (ds (+ ?f ?c))
+		(dr (- ?f ?c)) (pid ?id)
+		(depth (+ ?depthPadre 1)) (ancestros ?newId $?ancesPadre))))
+
+
+(defrule eliminarDeFrontera
+	?h1<-(frontera ?x $?resto)
+	;No se pueden generar hijos de ?x (para toda fila y columna hay una reina que ataca)
+	
+	(forall (and (fila ?f) (col ?c)) ;Toda fila y columna esta atacada
+		(or 
+		(and (reina (id ?id) (ancestros $? ?anc  $?)) (reina (id ?anc) (fila ?f)))  ;Por una reina ancestro en la misma fila
+		(and (reina (id ?id) (ancestros $? ?anc  $?)) (reina (id ?anc) (col ?c))) ;Por una reina ancestro en la misma columna
+		(and (reina (id ?id) (ancestros $? ?anc  $?)) (reina (id ?anc) (ds =(+ ?f ?c)))) ;Por una reina ancestro en la misma diagonal suma
+		(and (reina (id ?id) (ancestros $? ?anc  $?)) (reina (id ?anc) (dr =(- ?f ?c)))))) ;Por una reina ancestro en la misma diagonal resta
+	=>
+	(retract ?h1)
+	(assert (frontera $?resto)))
+
+-----------------------
+
+
+
+Para crear una reina necesitamos:
+
+-fila
+-colimna
+-Id padre
+-profundidad (del nodo)
+-diagonales
+-ancestros
+-ID nodo
+
+
+(deftemplate reina
+	(slot id)  ;Id de la reina
+	(slot fila) ;Filas
+	(slot ds);Diagonal suma 
+	(slot col);columnas
+	(slot dr) ;Diagonal resta
+	(slot pid) ;id padre
+	(slot depth) ; 
+	(multislot ancestros) ;ids ancestros nodo
+)
+
+(deffacts hechos
+	(fila 1) (fila 2) (fila 3) (fila 4)
+	(fila 5) (fila 6) (fila 7) (fila 8) 
+	(col 1) (col 2) (col 3) (col 4)
+	(col 5) (col 6) (col 7) (col 8) 
+	(nextId 1) (frontera 0)
+	(reina (id 0) (depth 0)(ancestros 0))
+)
+
+(defrule posicionNuevaReina
+	?h1<-(frontera ?id $?resto)
+	(reina (id ?id) (ancestros $?ancesPadre) (depth ?depthPadre))
+	(fila ?f) (col ?c)
+	?h2<- (nextId ?newId)
+	(not (and (reina (id ?id) (ancestros $? ?anc  $?)) (reina (id ?anc) (fila ?f))))
+	(not (and (reina (id ?id) (ancestros $? ?anc  $?)) (reina (id ?anc) (col ?c))))
+	(not (and (reina (id ?id) (ancestros $? ?anc  $?)) (reina (id ?anc) (ds =(+ ?f ?c)))))
+	(not (and (reina (id ?id) (ancestros $? ?anc  $?)) (reina (id ?anc) (dr =(- ?f ?c)))))
+	=>
+	(retract ?h1)
+	(retract ?h2)
+	(assert (frontera ?newId ?id $?resto) (nextId (+ ?newId 1)))
+	(assert (reina (id ?newId) (fila ?f)
+		(col ?c) (ds (+ ?f ?c))
+		(dr (- ?f ?c)) (pid ?id)
+		(depth (+ ?depthPadre 1)) (ancestros ?newId $?ancesPadre))))
+
+
+(defrule eliminarDeFrontera
+	?h1<-(frontera ?x $?resto)
+	;No se pueden generar hijos de ?x (para toda fila y columna hay una reina que ataca)
+	;Toda fila y columna esta atacada
+	(forall (and (fila ?f) (col ?c))
+		(or 
+		(and (reina (id ?id) (ancestros $? ?anc  $)) reina (?id ?anc) (pos ?f)))
+		(and (reina (id ?id) (ancestros $? ?anc  $)) reina (?id ?anc) (pos ?c)))
+		(and (reina (id ?id) (ancestros $? ?anc  $)) reina (?id ?anc) (ds (+ ?f ?c)))
+		(and (reina (id ?id) (ancestros $? ?anc  $)) reina (?id ?anc) (dr (- ?f ?c)))
+	=>
+	(retract ?h1)
+	(assert (frontera $?resto)))
+
+
+
+
+(defrule crearReina
+	?hNid<- (nextId ?nuevoId)
+	....
+	=>
+	(retract ?hNid)
+	(assert (reina (id ?nuevoId) ..... ))
+	(assert (nextId (+ ?nuevoId +1)))
+	(defrule eliminarDeFront
+	(frontera...)
+	(forall...
+	=>
+	(retract....)
+
+
+
+---------------------------
+

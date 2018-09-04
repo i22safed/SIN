@@ -1,0 +1,188 @@
+Ejercicios CLIPS sobre hechos.
+José Miguel Sánchez Martínez
+
+
+ej1:
+
+(deftemplate persona
+	(slot nombre (default ?NONE) (type STRING))
+	(slot apellidos (default ?NONE) (type STRING))
+	(slot color-ojos (default noConsta) (type SYMBOL))
+	(slot altura (default -1.0) (type FLOAT))
+	(slot edad (default -1) (type INTEGER))
+	)
+
+
+
+ej2:
+
+(deftemplate paciente
+	(multislot nombre (cardinality 1 2))
+	(multislot apellidos (cardinality 1 2))
+	(slot dni (default ?NONE))
+	(slot seguromedico)
+	)
+
+(deftemplate visita
+	(slot fecha (default ?NONE))
+	(multislot sintomas)
+	(multislot pruebas)
+	(multislot medicacion)
+	(slot dni (default ?NONE))
+	)
+
+
+
+ej3:
+
+(deftemplate trayecto
+	(slot origen (default ?NONE))
+	(slot destino (default ?NONE))
+	)
+
+(assert (trayecto (origen Roma) (destino Madrid)))
+(assert (trayecto (origen Roma) (destino Lisboa)))
+(assert (trayecto (origen Roma) (destino Frankfurt)))
+(assert (trayecto (origen Lisboa) (destino Madrid)))
+(assert (trayecto (origen Lisboa) (destino Paris))
+(assert (trayecto (origen Paris) (destino Roma)))
+(assert (trayecto (origen Frankfurt) (destino Estocolmo)))
+(assert (trayecto (origen Estocolmo) (destino Paris)))
+
+
+
+ej4:
+
+(deftemplate persona
+	(slot dni (default ?NONE))
+	(slot nombre (default ?NONE))
+	(slot apellidos (default ?NONE))
+	(slot color-ojos (default noConsta) (type SYMBOL))
+	(slot altura (default -1.0) (type FLOAT))
+	(slot edad (default -1) (type INTEGER))
+	)
+
+(deftemplate parentesco
+	(slot persona1dni (default ?NONE)) 
+	(slot persona2dni (default ?NONE)) 
+	(slot relacion (default ?NONE) (type STRING))
+	)
+
+(assert (persona (dni 123) (nombre jose) (apellidos sanchez)))
+(assert (persona (dni 345) (nombre miguel) (apellidos martinez)))
+(assert (parentesco (persona1dni 123) (persona2dni 345) (relacion "hermano")))
+
+
+
+ej5:
+
+(deftemplate libro
+	(multislot autores (type STRING))
+	(multislot titulo (default ?NONE) (type STRING))
+	(multislot editorial (type STRING))
+	(multislot edicion (type STRING))
+	(slot anyo (type INTEGER))
+	)
+
+
+(assert (libro (autores "Mira, j" "Delagado, A") (titulo "Aspectos basicos de la inteligencia artificial") (editorial "Snaz y torres") (anyo 1995)))
+(assert (libro (autores "Galán, S. F.; Boticario, J. G., Mira, J") (titulo "Problemas Resueltos de Inteligencia Artificial Aplicada: Búsqueda y Representación") (editorial "Addison-Wesley Iberoamericana S. A") (anyo 1998)))
+(assert (libro (autores "Rich, E., Knight, K.") (titulo "Inteligencia Artificial.") (editorial "McGraw-Hill Interamericana") (edicion "2ª edición") (anyo 1994)))
+
+
+
+ej6:
+
+
+(deftemplate coche
+	(slot uds (default ?NONE) (type INTEGER))
+	(slot modelo (default ?NONE) (type STRING))
+	(multislot motor (default ?NONE) (cardinality 1 2))
+	(slot puertas (default ?NONE) (type INTEGER))
+	(slot color (default ?NONE) (type STRING))
+	)
+
+(deftemplate venta
+	(multislot cliente (default ?NONE))
+	(multislot vendedor (default ?NONE))
+	(slot fecha (default ?NONE))
+	(slot modelo (type STRING))
+	)
+
+
+
+ej7:
+
+(deftemplate animal
+	(slot especie (default ?NONE) (type SYMBOL))
+	(slot subespecie (default ?NONE) (type SYMBOL))
+	(slot tipo)
+	(slot nombre (default ?NONE) (type SYMBOL))
+	)
+
+(assert (animal (especie mamiferos) (subespecie roedores) (nombre rata)))
+(assert (animal (especie mamiferos) (subespecie roedores) (nombre ardilla)))
+
+(assert (animal (especie mamiferos) (subespecie felinos) (nombre tigre)))
+(assert (animal (especie mamiferos) (subespecie felinos) (nombre lince)))
+(assert (animal (especie mamiferos) (subespecie felinos) (nombre jaguar)))
+
+(assert (animal (especie reptiles) (subespecie serpientes) (nombre boa)))
+(assert (animal (especie reptiles) (subespecie serpientes) (nombre cobra)))
+
+(assert (animal (especie aves) (subespecie rapaces) (tipo diurnas) (nombre halcon)))
+(assert (animal (especie aves) (subespecie rapaces) (tipo diurnas) (nombre gavilan)))
+(assert (animal (especie aves) (subespecie rapaces) (tipo nocturnas) (nombre buo)))
+(assert (animal (especie aves) (subespecie rapaces) (tipo nocturnas) (nombre lechuza)))
+
+
+
+ej8:
+
+(deftemplate comida
+	(multislot hay_para_pisto (default ---) (type SYMBOL))
+	(multislot comprar_para_pisto (default ---) (type SYMBOL))
+	(multislot comprar_para_tortilla (default ---) (type SYMBOL))
+	(multislot hay_para_tortilla (default ---) (type SYMBOL))
+	)
+
+//estado inicial
+(assert (comida (hay_para_pisto pimientos_verdes pimientos_rojos cebollas aceite) (comprar_para_pisto berenjenas calabacines tomate_triturado sal)
+	(hay_para_tortilla cebollas aceite) (comprar_para_tortilla huevos patatas sal)))
+
+//Compro todo
+(modify 0 (hay_para_pisto pimientos_verdes pimientos_rojos berenjenas calabacines cebollas tomate_triturado sal aceite) (comprar_para_pisto ---)
+	(hay_para_tortilla huevos patatas cebollas aceite sal) (comprar_para_tortilla ---))
+
+//gasto todo
+(modify 1 (comprar_para_pisto pimientos_verdes pimientos_rojos berenjenas calabacines cebollas tomate_triturado sal aceite) (hay_para_pisto ---)
+	(comprar_para_tortilla huevos patatas cebollas aceite sal) (hay_para_tortilla ---))
+
+
+
+ej 9:
+
+(deftemplate barco
+	(slot tipo (default ?NONE) (allowed-symbols patrullera dragaminas fragata acorazado destructor portaaviones))
+	(slot estado (default indemne) (allowed-symbols indemne tocado hundido))
+	(multislot posicion (default ?NONE) (cardinality 1 4))
+	)
+
+
+
+ej 10:
+
+(deftemplate grupo
+	(multislot alum1)
+	(multislot alum2)
+	(multislot alum3)
+	(multislot alum4)
+	(slot notatrabajo (type INTEGER) (range 0 10))
+	)
+
+(deftemplate alumno
+	(multislot nombre (defalut ?NONE))
+	(multislot apellidos (default ?NONE))
+	(slot notaex1 (type INTEGER) (range 0 10))	
+	(slot notaex2 (type INTEGER) (range 0 10))
+	)

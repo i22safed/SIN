@@ -1,0 +1,58 @@
+
+- Diapositivas tema 4 
+
+- Plantillas (Representación de la información)
+
+		Utilizaremos el constructor de plantillas (deftemplate)
+
+		(deftemplate persona 
+		(slot nombre)
+		(slot edad)
+		(multislot direccion)
+
+		)
+
+	· Estructura de plantillas 
+
+	· Valores por defecto 
+
+		<atributo_por_defecto> ::=
+		(default ?DERIVE | ?NONE | <expresion>*) | ...
+
+	· Ejemplo del cuestionario el de los slots w, x, y, z
+
+	· Anotaciones->	(slot edad ( type LEXEME)) -> tipo lexema == string 
+				   
+				   	(slot edad ( type INTEGER SYMBOL)) -> tipo entero o simbolo
+				   
+				   	(slot x(allowed-values uno dos)) -> valores permitidos uno o dos, es decir que no puede introducir 1 ó 2 
+
+	· Ordenes relacionadas con plantillas 
+
+		* (ppdeftemplate <nombre-plantilla>) ->
+		* (list-deftemplates [<nombre-modulo> | *]) ->
+		* (undeftemplate <nombre-plantilla> | *) ->
+
+	· Constructor de hechos (deffacts)
+
+		* Corchetes -> Opcional
+		* Aterisco -> 0 o mas hechos 
+		* Suma -> Que se repite 
+
+	Estructura -> (deffacts <nombre-definición> [<comentario>] <hecho> *)
+
+	· Ejemplo (constructor de hechos)
+
+	(deffacts personas
+
+		(persona(nombre Juan)
+		(apellidos Fernandez)
+		(dni 1))
+
+	)
+
+ - Relación de ejercicios sobre hechos completarla para la semana (o dos semanas ? ) que viene 
+
+- Bibliografia 
+
+http://www.uco.es/users/sventura/misc/TutorialCLIPS/TutorCLIPS02.htm

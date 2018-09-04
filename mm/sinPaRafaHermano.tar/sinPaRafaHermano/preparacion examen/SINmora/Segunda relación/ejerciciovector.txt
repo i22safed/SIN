@@ -1,0 +1,19 @@
+(defrule reglaVector
+"Comparo los elementos de un vector para saber si están ordenados"
+(dato
+$?z
+?x&: (numberp ?x)
+?y&: (> ?x ?y)
+$?w
+=>
+(printout t "El vector "$?z" "?x" "?y" "$?w" está ordenado"crlf)
+)
+
+(deffacts vector
+"Vectores de numeros a comprobar"
+(numeros 1 2 3 4)
+(numeros 3 5 4 1)
+(numeros 9 7 8 4)
+)
+
+//Probar vector impares de dos a dos metiendo monocampo entre medias equisdé

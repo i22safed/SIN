@@ -1,0 +1,459 @@
+Ejercicio1:
+
+(defrule perro
+	(sonido guau)
+	=>
+	(printout t "Se trata de un perro" crlf)
+	)
+
+(defrule gato
+	(sonido miau)
+	=>
+	(printout t "Se trata de un gato" crlf)
+	)
+
+(defrule pato
+	(sonido cua)
+	=>
+	(printout t "Se trata de un pato" crlf)
+	)
+
+(defrule vaca
+	(sonido muu)
+	=>
+	(printout t "Se trata de un vaca" crlf)
+	)
+
+(defrule obeja
+	(sonido bee)
+	=>
+	(printout t "Se trata de un oveja" crlf)
+	)
+
+
+(defrule gallo
+	(sonido kikiriki)
+	=>
+	(printout t "Se trata de un gallo" crlf)
+	)
+
+
+------------
+
+Ejercicio2:
+
+(deftemplate animal
+	(slot nombre)
+	(slot sonido)
+)
+
+(deffacts hechos
+	(animal (nombre perro) (sonido guau))
+	(animal (nombre pato) (sonido cua))
+	(animal (nombre oveja) (sonido bee))
+	(animal (nombre gallo) (sonido kikiriki))
+	(animal (nombre vaca) (sonido muu))
+	(animal (nombre gato) (sonido miau))
+)
+
+(defrule reconocerSonido
+	?h1<-(animal (nombre ?x) (sonido ?y))
+	(sonido ?y)
+	=>
+	(printout t ?y" -> "?x crlf)
+	(retract ?h1)
+)
+
+--------------
+
+Ejercicio3:
+
+
+(deffacts calcular
+  (valor 3) ;Valor a calcular el factorial, para no poner el assert
+) 
+
+(deffacts Resultado-factorial
+  (resultado 1) ;Para no multiplicar por cero
+) 
+
+(defrule calcular-factorial
+  ?h1 <- (valor ?x&:(> ?x 1))
+  ?h2 <- (resultado ?r)
+  =>
+    (retract ?h1 ?h2)
+    (assert (resultado (* ?x ?r)))
+    (assert (valor (- ?x 1))
+  )
+) 
+
+
+(defrule mostrar-factorial
+  (valor  ?x&:(= ?x 1))
+  (resultado ?r)
+  =>
+  (printout t "El resultado del factorial es: " ?r crlf))
+
+
+------------
+
+Ejercicio4:
+
+(deftemplate sensor
+	(slot codigo (type INTEGER) (allowed-integers 1 2 3 4 5 6 7 8 9 10))
+	(slot estado (allowed-values correcto incorrecto))
+	)
+	
+(deffacts sensores
+	(sensor (codigo 1) (estado incorrecto))
+	(sensor (codigo 2) (estado correcto))
+	(sensor (codigo 3) (estado incorrecto))
+	(sensor (codigo 4) (estado correcto))
+	(sensor (codigo 5) (estado incorrecto))
+	(sensor (codigo 6) (estado correcto))
+	(sensor (codigo 7) (estado correcto))
+	(sensor (codigo 8) (estado correcto))
+	(sensor (codigo 9) (estado correcto))
+	(sensor (codigo 10) (estado correcto)))
+
+(defrule detectaError 
+	(exists  ; para que solo lo muestre una vez
+		(sensor (codigo ?x) (estado incorrecto))
+		(sensor (codigo ?y&~?x) (estado incorrecto)) ; ?y sea distinto ?x
+		(sensor (codigo ?z) (estado incorrecto))
+		(not (test (= ?x ?z)))
+		(not (test (= ?y ?z))))
+	=>
+	(printout t "ERROR!" crlf))
+
+
+
+---------
+Ejercicio5:
+
+(deftemplate fecha
+	(slot dia (type INTEGER))
+	(slot mes (type INTEGER))
+	(slot anyo (type INTEGER))
+	)
+
+(deffacts fechas
+	(fecha (dia 1) (mes 1) (anyo 1))
+	(fecha (dia 31) (mes 1) (anyo 1))
+	(fecha (dia 30) (mes 4) (anyo 1))
+	(fecha (dia 31) (mes 4) (anyo 1)) ;error, no existe 31 abril
+	(fecha (dia 29) (mes 2) (anyo 2012)) ;29 febrero en año bisiesto
+	(fecha (dia 29) (mes 2) (anyo 2013)) ;29 febrero año no bisiesto, error!
+	)
+
+(defrule FechaInvalida
+	?h1<-(fecha (dia ?d) (mes ?m) (anyo ?a))
+	(or
+		(test (< ?a 0))
+		(test (> ?m 12))
+		(test (> ?d 31))
+		(test (< ?m 1))
+		(test (< ?d 1))
+		(test (and (> ?d 29) (= ?m 2)))
+		(test (and (> ?d 30) (or (= ?m 4) (= ?m 6) (= ?m 9) (= ?m 11))))
+		(not (test (or (and (> ?d 28)
+							(= ?m 2) 
+							(or (= (mod ?a 400) 0) 
+								(and (= (mod ?a 4) 0) 
+									 (!= (mod ?a 100) 0))))
+						(!= ?m 2))))
+	)
+	=>
+	(retract ?h1)
+	(printout t "La fecha: " ?d"/"?m"/" ?a", es una fecha invalida!" crlf)
+	)
+
+
+--------
+
+Ejercicio 6:
+
+(deftemplate planta
+	(slot nombre)
+	(multislot caracteristicas))
+
+(deffacts plantas
+	(planta (nombre Hortensia) (caracteristicas sombra ciudad maceta creceRapido))
+	(planta (nombre adelfa) (caracteristicas ciudad maceta cuidadoFacil creceRapido))
+	)
+
+(deffacts cDeseadas
+	(caracteristicaDeseada maceta)
+	(caracteristicaDeseada cuidadoFacil)
+	)
+
+(defrule buscaPlantas
+	(planta (nombre ?n))
+	(forall (caracteristicaDeseada ?x)
+		(planta (nombre ?n) (caracteristicas $? ?x $?)))
+	=>
+	(printout t ?n crlf)
+	)
+
+--------------
+Ejercicio 7:
+
+(deftemplate planta
+	(slot nombre)
+	(multislot caracteristicas))
+
+(deffacts plantas  ;habria que rellenarlo entero
+	(planta (nombre Hortensia) (caracteristicas sombra ciudad maceta creceRapido))
+	(planta (nombre adelfa) (caracteristicas ciudad maceta cuidadoFacil creceRapido))
+	)
+
+(deffacts cDeseadas
+	(caracteristicaDeseada maceta)
+	(caracteristicaDeseada cuidadoFacil)
+	)
+
+(defrule buscaPlantas
+	(planta (nombre ?n))
+	(forall (caracteristicaDeseada ?x)    ;todas las caracteristicas deseadas tienen que estar en la planta
+		(planta (nombre ?n) (caracteristicas $? ?x $?)))
+	(forall (planta (nombre ?n) (caracteristicas $? ?x $?))  ;todas las caracteristicas de la planta tienen que ser deseadas
+		(caracteristicaDeseada ?x)
+		)
+	=>
+	(printout t ?n crlf)
+	)
+
+----------------
+Ejercicio extra:
+* diseña sistema detecte un hecho datos contiene los daots de forma simetrica.
+
+;(datos 3 4 1 8 planta 1 4 3)  NO
+;(datos 3 4 planta planta 4 3) SI
+:(datos casa 3 casa)  SI
+;(datos 1) SI
+;(datos ) SI
+
+;quitar primer y ultimo elemento si son iguales
+(defrule veEliminando
+	?h1<-(datos ?x $?resto ?x)
+	=>
+	(retract ?h1)
+	(assert (datos $?resto))
+	)
+;El primero y el ultimo no son iguales, no simetrico
+(defrule noSimetrico
+	?h1<-(datos ?x $?resto ?y&~?x)
+	=>
+	(retract ?h1)
+	(printout t "No es simetrico!" crlf)
+)
+
+;si es simetrico
+(defrule imprimeSimetrico
+	?h1<-(datos ?)	
+	=>
+	(retract ?h1)
+	(printout t "Si es simetrico!" crlf)
+)
+
+(defrule imprimeSimetrico2
+	?h1<-(datos )	
+	=>
+	(retract ?h1)
+	(printout t "Si es simetrico!" crlf)
+)
+
+
+-----------------------------
+Ejericio8:
+
+(deffacts hechos
+	(numero 1)
+	(numero 5)
+	(numero 3)
+	(numero 14)
+	(numero 25)
+	(numero 7)
+	(numero 11)
+	)
+
+(defrule anadirPrimero       ;añade el primer numero y crea un numeros
+	?h2<-(numero ?x)
+	(not (numeros $?))
+	=>
+	(retract ?h2)
+	(assert (numeros ?x))
+	)
+
+(defrule anadirResto          ;añade el resto de "numero" a numeros
+	?h1<-(numeros $?num)
+	?h2<-(numero ?x)
+	=>
+	(retract ?h1)
+	(retract ?h2)
+	(assert (numeros $?num ?x))
+	)
+
+(defrule ordenar       ;cuando no quedan "numero" ordena "numeros"
+	?h1<-(numeros $?ant ?a $?mid ?b&:(< ?b ?a) $?post)
+	(not (numero ?))
+	=>
+	(retract ?h1)
+	(assert (numeros $?ant ?b $?mid ?a $?post))
+	)
+
+
+---------------------
+
+Ejercicio9:
+
+(deftemplate habitacion
+	(slot id (type INTEGER))
+	(slot tipo (allowed-values simple doble triple cuadruple))
+	(slot sexo (allowed-values null hombre mujer))
+	(slot fumadores (allowed-values null si no))
+	(slot ocupantes (default 0))
+	)
+(deftemplate estudiante
+	(slot nombre)
+	(slot sexo (allowed-values hombre mujer))
+	(slot fumador (allowed-values si no))
+	(slot habitacion (default -1)(type INTEGER))
+	)
+
+(deffacts hechos
+	(habitacion (id 1) (tipo simple))
+	(habitacion (id 2) (tipo cuadruple))
+	(habitacion (id 3) (tipo doble))
+	(habitacion (id 4) (tipo triple))
+	(habitacion (id 5) (tipo doble))
+	(habitacion (id 6) (tipo cuadruple))
+	(estudiante (nombre juan) (sexo hombre) (fumador no))
+	(estudiante (nombre juan2) (sexo hombre) (fumador si))
+	(estudiante (nombre juan3) (sexo hombre) (fumador no))
+	(estudiante (nombre juan4) (sexo hombre) (fumador si))
+	(estudiante (nombre ana) (sexo mujer) (fumador no))
+	(estudiante (nombre ana1) (sexo mujer) (fumador si))
+	(estudiante (nombre ana2) (sexo mujer) (fumador no))
+	(estudiante (nombre ana3) (sexo mujer) (fumador si))
+	(estudiante (nombre ana4) (sexo mujer) (fumador no))
+	(estudiante (nombre ana5) (sexo mujer) (fumador no))
+	)
+
+(defrule meterHabitacion4
+	?h1<-(estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion -1))
+	?h2<-(habitacion (id ?i) (tipo cuadruple) (fumadores ?f4&:(or (eq ?f4 ?f) (eq ?f4 null))) (sexo ?s4&:(or (eq ?s4 ?s) (eq ?s4 null))) (ocupantes ?o))
+	(test (< ?o 4))
+	=>
+	(retract ?h1 ?h2)
+	(assert (estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion ?i)))
+	(assert (habitacion (id ?i) (tipo cuadruple) (fumadores ?f) (sexo ?s) (ocupantes (+ ?o 1))))
+)
+
+(defrule meterHabitacion3
+	?h1<-(estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion -1))
+	(not (habitacion (id ?i) (tipo cuadruple) (fumadores ?f4&:(or (eq ?f4 ?f) (eq ?f4 null))) (sexo ?s4&:(or (eq ?s4 ?s) (eq ?s4 null))) (ocupantes ?o4&:(< ?o4 4))))
+	?h2<-(habitacion (id ?i) (tipo triple) (fumadores ?f3&:(or (eq ?f3 ?f) (eq ?f3 null))) (sexo ?s3&:(or (eq ?s3 ?s) (eq ?s3 null))) (ocupantes ?o))
+	(test (< ?o 3))
+	=>
+	(retract ?h1 ?h2)
+	(assert (estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion ?i)))
+	(assert (habitacion (id ?i) (tipo triple) (fumadores ?f) (sexo ?s) (ocupantes (+ ?o 1))))
+)
+
+(defrule meterHabitacion2
+	?h1<-(estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion -1))
+	(not (habitacion (id ?i) (tipo cuadruple) (fumadores ?f4&:(or (eq ?f4 ?f) (eq ?f4 null))) (sexo ?s4&:(or (eq ?s4 ?s) (eq ?s4 null))) (ocupantes ?o4&:(< ?o4 4))))
+	(not (habitacion (id ?i) (tipo triple) (fumadores ?f3&:(or (eq ?f3 ?f) (eq ?f3 null))) (sexo ?s3&:(or (eq ?s3 ?s) (eq ?s3 null))) (ocupantes ?o3&:(< ?o3 3))))
+	?h2<-(habitacion (id ?i) (tipo doble) (fumadores ?f2&:(or (eq ?f2 ?f) (eq ?f2 null))) (sexo ?s2&:(or (eq ?s2 ?s) (eq ?s2 null))) (ocupantes ?o))
+	(test (< ?o 2))
+	=>
+	(retract ?h1 ?h2)
+	(assert (estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion ?i)))
+	(assert (habitacion (id ?i) (tipo doble) (fumadores ?f) (sexo ?s) (ocupantes (+ ?o 1))))
+)
+(defrule meterHabitacion1
+	?h1<-(estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion -1))
+	(not (habitacion (id ?i) (tipo cuadruple) (fumadores ?f4&:(or (eq ?f4 ?f) (eq ?f4 null))) (sexo ?s4&:(or (eq ?s4 ?s) (eq ?s4 null))) (ocupantes ?o4&:(< ?o4 4))))
+	(not (habitacion (id ?i) (tipo triple) (fumadores ?f3&:(or (eq ?f3 ?f) (eq ?f3 null))) (sexo ?s3&:(or (eq ?s3 ?s) (eq ?s3 null))) (ocupantes ?o3&:(< ?o3 3))))
+	(not (habitacion (id ?i) (tipo doble) (fumadores ?f2&:(or (eq ?f2 ?f) (eq ?f2 null))) (sexo ?s2&:(or (eq ?s2 ?s) (eq ?s2 null))) (ocupantes ?o2&:(< ?o2 2))))
+	?h2<-(habitacion (id ?i) (tipo simple) (fumadores ?f1&:(or (eq ?f1 ?f) (eq ?f1 null))) (sexo ?s1&:(or (eq ?s1 ?s) (eq ?s1 null))) (ocupantes ?o))
+	(test (< ?o 1))
+	=>
+	(retract ?h1 ?h2)
+	(assert (estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion ?i)))
+	(assert (habitacion (id ?i) (tipo simple) (fumadores ?f) (sexo ?s) (ocupantes (+ ?o 1))))
+)
+
+
+
+	
+	
+-----------------------------
+Ejercicio 10:
+
+(deftemplate producto 
+	(slot nombre) 
+	(slot pvp))
+(deftemplate compra
+	(slot producto)
+	(slot unidades))
+(deftemplate lista
+	(slot productos)
+	(slot cuenta))
+	
+(deffacts hechos
+	(producto (nombre a) (pvp 2))
+	(compra (producto a) (unidades 6))
+	;(lista (productos 0) (cuenta 0))
+	)
+
+(defrule importeSin ;sin 3x2
+	?h1<-(producto (nombre ?n) (pvp ?p))
+	?h2<-(compra (producto ?n) (unidades ?u&:(> (mod ?u 3) 0)))
+	?h3<-(lista (productos ?pr) (cuenta ?c))
+	=>
+	(retract ?h1 ?h2 ?h3)
+	(assert (lista (productos (+ ?pr 1)) (cuenta (+ ?c (* ?p ?u)))))
+	)
+	
+(defrule importeCon ;con 3x2
+	?h1<-(producto (nombre ?n) (pvp ?p))
+	?h2<-(compra (producto ?n) (unidades ?u&:(= (mod ?u 3) 0)))
+	?h3<-(lista (productos ?pr) (cuenta ?c))
+	=>
+	(retract ?h1 ?h2 ?h3)
+	(assert (lista (productos (+ ?pr 1)) (cuenta (+ ?c (* ?p (- ?u (/ ?u 3)))))))  ;calcula el descuento restando las unidades "gratis" con el 3x2
+	)
+	
+(defrule mostrarcuenta
+	?h1<-(lista (productos ?p) (cuenta ?c))
+	(forall (producto (nombre ?n))
+			(compra (producto ?pr&:(neq ?n ?pr)))
+	)
+	=>
+	(printout t "Se han comprado " ?p " productos y la cuenta total es: " ?c " euros." crlf)
+	)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

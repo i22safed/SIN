@@ -1,0 +1,706 @@
+  ---------------------------------Ejercicio1--------------------------------------
+
+(deffacts hechos
+	(sonido guau)
+	(sonido miau)
+	(sonido cuac)
+	(sonido muuu)
+	(sonido bee)
+	(sonido kikiriki)
+)
+
+(defrule sonidoperro
+	(sonido guau)
+	=>
+	(printout t "se trata de un perro" crlf)
+) 
+(defrule sonidogato
+	(sonido miau)
+	=>
+	(printout t "se trata de un gato" crlf)
+)
+(defrule sonidopato
+	(sonido cuac)
+	=>
+	(printout t "se trata de un pato" crlf)
+)  
+(defrule sonidovaca
+	(sonido muu)
+	=>
+	(printout t "se trata de una vaca" crlf)
+) 	
+(defrule sonidooveja
+	(sonido bee)
+	=>
+	(printout t "se trata de una oveja" crlf)
+) 
+(defrule sonidogallo
+	(sonido kikiriki)
+	=>
+	(printout t "se trata de un gallo" crlf)
+) 
+
+
+---------------------------------Ejercicio2---------------------------------------
+
+(deftemplate animal
+	(slot nombre)
+	(slot sonido)
+)
+
+
+
+(defrule animales
+	
+	(animal(nombre ?animal)(sonido ?sonido))
+	=>
+	(printout t "se trata de: " ?animal)
+)
+
+---------------------------------Ejercicio3---------------------------------------
+
+
+(deffacts hechos
+	(datos 4 5)
+	(datos 5 2)
+	(datos 4 1)
+	(datos 4 9)
+)
+
+
+(defrule mayor
+	?h1<-(datos ?x ?y)
+	(test(> ?y  ?x))
+	=>
+	(printout t "El hecho" ?h1 "cumple que el segundo valor: "?y" es mayor que el primero: " ?x crlf)
+)
+
+
+---------------------------------Ejercicio4---------------------------------------
+
+
+(deffacts hechos 
+	(datos 2 5 24 5 62 4 2 8);si se cumple
+	(datos 24  23 4 1  5 2  4 2);no se cumple
+	(datos 1 34 45 34 2)
+)
+
+(defrule par
+	(datos ?principio $? ?final&:(evenp ?principio)&:(< ?principio ?final))
+	=>
+	(printout t "primer numero "?principio " segundo numero "?final crlf)
+)
+
+
+---------------------------------Ejercicio5---------------------------------------
+
+
+(deffacts hechos
+	(datos juan 11 1 hola pepe 5 6 20)
+	(datos 1 20 1 hola 1 1 5 hola adios)
+)
+
+(defrule borrarunos
+	?h1<-(datos $?ant ?x $?med)
+	(and (test(integerp ?x))
+		(test(= ?x 1))
+	)
+	=>
+	(retract ?h1)
+	(assert(datos $?ant $?med))
+)
+
+---------------------------------Ejercicio6---------------------------------------
+
+
+(deffacts hechos 
+	(vector vector1 1 2 bu 3 an 5 2 4)
+	(vector vector2 ad d 4 5 2 3) 
+	(vector vector3 1 8 2dasd dja)
+)
+
+(defrule detecta
+	(vector ?nombreVector $?delante ?x $?medio&:(oddp(length$ $?medio)) ?y $?detras)
+	(or
+		(test(eq ?x 3))
+		(test(eq ?x 4))	
+	)
+
+	(or 
+		(test(eq ?y 3))
+		(test(eq ?y 4))
+	
+	)
+	=>
+	(printout t "nombre vector correcto: "?nombreVector crlf)	
+)
+
+
+---------------------------------Ejercicio7---------------------------------------
+
+
+(deffacts hechos
+(datos 6 d hola 3 fa 44 f 9 s 7 20 fa juan 43)
+)
+
+(defrule eliminaValoresNoNumericos
+	?h1<-(datos $?delante ?x&~:(numberp ?x) $?detras)
+	
+	;segunda opcion (not(test(numberp ?x)))
+	=>
+	(retract ?h1)
+	(assert(datos $?delante $?detras ))
+	
+)
+
+---------------------------------Ejercicio8---------------------------------------
+
+
+(deffacts hechos
+	(vector vector1 1 2 3 4 5); si se cumple por que esta ordenado,por lo tanto no se muestra por pantalla
+	(vector vector2 1 2 5 4); vector desordenado, mostrara el nombre por pantalla
+	(vector vector2 2 3 14 1)
+)
+
+(defrule orden
+
+	(vector ?nombreVector)
+	(vector ?nombreVector1 &~?nombreVector $?delante ?x ?y&:(> ?x ?y) $?detras)
+	
+	=>
+	(printout t "el vector con nombre: "?nombreVector1 " no esta ordenado")
+)
+
+	
+
+---------------------------------Ejercicio9---------------------------------------
+
+
+(deffacts hechos 
+	(dato 1)
+	(dato 5)
+	(dato verde)
+	(todos-los-datos)
+)
+
+(defrule union
+
+	?h1<-(dato ?n1)
+	?h2<-(todos-los-datos $?todo)
+	=>
+	(retract ?h1 ?h2)
+	(assert(todos-los-datos ?n1 $?todo))
+	
+)
+
+---------------------------------Ejercicio10--------------------------------------
+
+
+(deffacts hechos 
+	(vector vector1 2 6 5 1)
+)
+
+(defrule orden 
+	?h1<-(vector ?nombreVector $?delante ?x ?y&:(> ?x ?y) $?valores)
+	
+	=>
+	(retract ?h1)
+	(assert(vector ?nombreVector $?delante ?y ?x $?valores))
+	
+)
+
+---------------------------------Ejercicio12--------------------------------------
+
+
+(deffacts hechos 
+	(dato 3)
+	(dato 1)
+	(dato 2)
+	(dato 4)
+)
+
+(defrule ordenDatos
+	(dato ?x)
+	(dato ?y&:(< ?x ?y))
+	=>
+	(assert(dato ?y))
+	(assert(dato ?x))
+	(printout t "dato "?x)
+	
+)
+
+
+---------------------------------Ejercicio13--------------------------------------
+
+
+(deffacts constructorHechosIniciales
+	(dato 4)
+	(dato 3)
+	(dato 1)
+	(todos-los-datos)
+)
+
+(defrule reglaForall
+	?dir <- (todos-los-datos $?valores)
+	(dato ?x)
+	(not 
+		(todos-los-datos $? ?x $?))
+		(forall (dato ?y&:(< ?y ?x))
+			(todos-los-datos $? ?y $?)
+		)
+	
+	=>
+
+	(retract ?dir)
+	(assert (todos-los-datos $?valores ?x))
+)
+
+---------------------------------Ejercicio14--------------------------------------
+
+
+(deffacts calcular
+  (valor 3) ;Valor a calcular el factorial
+) 
+
+(deffacts Resultado-factorial
+  (resultado 1) ;Para no multiplicar por cero
+) 
+
+(defrule calcular-factorial
+  ?h1 <- (valor ?x&:(> ?x 1))
+  ?h2 <- (resultado ?r)
+  =>
+    (retract ?h1 ?h2)
+    (assert (resultado (* ?x ?r)))
+    (assert (valor (- ?x 1))
+  )
+) 
+
+
+(defrule mostrar-factorial
+  (valor  ?x&:(= ?x 1))
+  (resultado ?r)
+  =>
+  (printout t "El resultado del factorial es: " ?r crlf))
+
+
+
+---------------------------------Ejercicio15--------------------------------------
+
+
+(deftemplate sensores
+	(slot codigo (type INTEGER)
+		     (range 1 10))
+	(slot estado(type SYMBOL)
+		    (allowed-symbols correcto incorrecto))
+)
+
+(deffacts hechos 
+	(sensores(codigo 1)(estado incorrecto))
+	(sensores(codigo 2)(estado incorrecto))
+	(sensores(codigo 4)(estado correcto))	
+	(sensores(codigo 3)(estado incorrecto))	
+	(sensores(codigo 5)(estado correcto))
+)
+
+(defrule tressensores
+(exists
+	(sensores(codigo ?uno)(estado incorrecto))
+	(sensores(codigo ?dos &~?uno)(estado incorrecto))
+	(sensores(codigo ?tres &~?uno&~?dos)(estado incorrecto))
+)
+	=>
+	(printout t "tres sensores incorrectos")
+
+)
+
+---------------------------------Ejercicio16--------------------------------------
+
+(deftemplate fecha
+	(slot dia (type INTEGER)(range 1 31))
+	(slot mes(type SYMBOL)(allowed-symbols enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre))
+	(slot anyo(type INTEGER)(range 1900 2100))
+)
+
+(deffacts hechos
+	(fecha(dia 12)(mes febrero)(anyo 2005));correcto
+)
+
+(defrule diaCorrecto
+	(fecha(dia ?dia)(mes ?mes)(anyo ?anyo))
+	
+	=>
+	(printout t "fecha introducida: "?dia"/"?mes"/"?anyo crlf)
+)
+
+(defrule bisiesto
+	(fecha(dia ?dia)(mes ?mes)(anyo ?anyo))
+	(and
+		(test(= (mod ?anyo 4) 0))
+		(or	
+		(not(test(= (mod ?anyo 100) 0)))
+		(test(= (mod ?anyo 400) 0))
+	)
+	)
+		
+	=>
+	(printout t "sabiendo que: ", crlf )
+	(printout t "p: es divisible entre 4 q: es divisble entre 100 r: es divisible entre 400" crlf)
+	(printout t "se aplica la expresion p^(no q v r)" crlf)
+	(printout t "fecha introducida: "?dia"/"?mes"/"?anyo" es bisiesto" crlf)
+)
+
+(defrule Nobisiesto
+	(fecha(dia ?dia)(mes ?mes)(anyo ?anyo))
+	(not
+		(and
+			(test(= (mod ?anyo 4) 0))
+			(or	
+				(not(test(= (mod ?anyo 100) 0)))
+				(test(= (mod ?anyo 400) 0))
+			)
+		)
+	)
+	=>
+	(printout t "Año No bisiesto" crlf)
+
+)
+
+---------------------------------Ejercicio17--------------------------------------
+
+(deftemplate plantas 
+	(slot nombre
+		   (type STRING)
+		   (default ?NONE)
+		   (allowed-strings "Hortensia" "Adelfa" "Laurel" "Madreselva" "Gardenia" "Enebro" "Pimentero" "Escaramujo" "Aucuba" "Azalea"))
+	(multislot caracteristicas
+			(type STRING)
+			(allowed-strings "Frio" "Sombra" "Suelo Humedo" "Suelo acido" "Ciudad" "Maceta" "Cuidado facil" "Crece rapido" "Sequedad"))
+)
+
+
+(deffacts hechos
+(plantas (nombre "Hortensia") (caracteristicas "Sombra" "Ciudad" "Maceta" "Crece rapido"))
+(plantas (nombre "Adelfa") (caracteristicas "Ciudad" "Maceta" "Cuidado facil" ))
+(plantas (nombre "Laurel") (caracteristicas "Frio" "Sequedad" "Suelo Humedo" "Ciudad" "Cuidado facil" "Crece rapido"))
+(plantas (nombre "Enebro") (caracteristicas "Frio" "Sequedad" "Suelo Humedo" "Ciudad" "Cuidado facil"))
+)
+
+(deffacts caracteristicas-deseadas
+(caracteristica-deseada "Frio")
+(caracteristica-deseada "Crece rapido")
+)
+
+(defrule comprobar-planta
+(plantas (nombre ?y))
+(forall (caracteristica-deseada ?x)
+(plantas (nombre ?y) (caracteristicas $? ?x $?)) 
+)
+=>
+(printout t "La planta " ?y " cuenta con las caracteristicas indicadas" crlf)
+)
+
+---------------------------------Ejercicio18--------------------------------------
+
+(deftemplate planta
+	(slot nombre)
+	(multislot caracteristicas)
+) 
+(deftemplate puede-plantarse
+	(slot planta)
+) 
+
+(deffacts plantas
+	(planta (nombre hortensia) (caracteristicas sombra ciudad maceta crecer-rapido))
+	(planta (nombre adelfa) (caracteristicas ciudad maceta cuidado-facil crecer-rapido))
+	(planta (nombre laurel) (caracteristicas frio sombra sequedad suelo-humedo ciudad cuidado-facil crecer-rapido))
+	(planta (nombre madreselva) (caracteristicas ciudad maceta cuidado-facil crecer-rapido))
+	(planta (nombre gardenia) (caracteristicas sombra suelo-acido maceta))
+	(planta (nombre enebro) (caracteristicas frio sequedad suelo-acido ciudad cuidado-facil))
+	(planta (nombre pimentero) (caracteristicas frio sombra suelo-humedo suelo-acido cuidado-facil))
+	(planta (nombre escaramujo) (caracteristicas frio sombra suelo-humedo ciudad cuidado-facil))
+	(planta (nombre aucuba) (caracteristicas sombra sequedad maceta cuidado-facil))
+	(planta (nombre azalea) (caracteristicas sombra suelo-humedo suelo-acido maceta)))
+
+(deffacts caracteristicas-deseadas
+	(caracteristica-deseada sombra)
+	(caracteristica-deseada ciudad)
+	(caracteristica-deseada maceta)
+	(caracteristica-deseada crecer-rapido))
+
+
+(defrule comprobar-planta
+	(planta (nombre ?y))
+	(forall (caracteristica-deseada ?x)
+	(planta (nombre ?y) (caracteristicas $? ?x $?)) )
+	(not (exists (and (planta (nombre ?y) (caracteristicas $? ?a $? ))
+	(not (caracteristica-deseada ?a) ))))
+=>
+(printout t "La planta " ?y " cuenta con las caracteristicas indicadas" crlf)
+)
+
+---------------------------------Ejercicio19--------------------------------------
+
+(deffacts vectores
+	(vector v1 3 4 1 2 5 29 2 1)
+	(vector v2 6 8 9 4)
+	(vector v3 6 8 9 13)
+	(vector v4 -7 -4 0 3 28))
+
+(defrule detectaNoOrdenado
+	(vector ?nombre $? ?x ?y&:(< ?y ?x) $?)
+	=>
+	(printout t "El vector " ?nombre "no está ordenado" crlf))
+
+(defrule detectaOrdenado
+	(vector ?nombre $?)
+	(forall (vector ?nombre $? ?x ?y $?)
+		(test (>= ?y ?x)))
+	=>
+	(printout t "El vector " ?nombre " está ordenado" crlf))
+
+---------------------------------Ejercicio20--------------------------------------
+
+(deftemplate habitacion
+(slot numero)
+(slot capacidad (type INTEGER) (range 1 4))
+(slot sexo (type SYMBOL) (allowed-symbols hombre mujer))
+(slot fumadores (type SYMBOL) (allowed-symbols si no))
+(slot plazas-libres (type INTEGER) (range 0 4))
+(multislot compañeros))
+
+(deftemplate estudiante
+(slot nombre)
+(slot sexo (type SYMBOL) (allowed-symbols hombre mujer))
+(slot fuma (type SYMBOL) (allowed-symbols si no))
+(slot alojado (type SYMBOL INTEGER) (allowed-symbols no) (default no))
+)
+
+(deffacts residencia
+(habitacion (numero 1) (capacidad 2) (plazas-libres 2))
+(habitacion (numero 2) (capacidad 1) (plazas-libres 1))
+(habitacion (numero 3) (capacidad 3) (plazas-libres 3))
+(habitacion (numero 4) (capacidad 2) (plazas-libres 2))
+(estudiante(nombre Paco)(sexo hombre)(fuma no)(alojado no))
+(estudiante(nombre Pepe)(sexo hombre)(fuma si)(alojado no))
+(estudiante(nombre A)(sexo hombre)(fuma si)(alojado no))
+(estudiante(nombre B)(sexo hombre)(fuma si)(alojado no))
+(estudiante(nombre C)(sexo hombre)(fuma no)(alojado no))
+(estudiante(nombre D)(sexo hombre)(fuma si)(alojado no))
+(estudiante(nombre E)(sexo hombre)(fuma si)(alojado no))
+(estudiante(nombre F)(sexo hombre)(fuma si)(alojado no))
+(estudiante(nombre G)(sexo hombre)(fuma si)(alojado no))
+)
+
+
+(defrule alojar
+?t <- (estudiante(nombre ?nom) (sexo ?s) (fuma ?f) (alojado no))
+(not (habitacion(plazas-libres ?pl&:(> ?pl 0))
+(sexo ?s)
+(fumadores ?f)))
+?destino <- (habitacion (numero ?num)
+(capacidad ?c2)
+(plazas-libres ?c2))
+(not (habitacion (capacidad ?c3)
+(plazas-libres ?c3&:(> ?c3 ?c2))))
+=>
+(modify ?t (alojado ?num))
+(modify ?destino (plazas-libres (- ?c2 1)) (sexo ?s) (fumadores ?f) (compañeros ?nom))
+(printout t "Estudiante " ?nom " alojado en la habitacion " ?num " de capacidad " ?c2 crlf)
+)
+
+(defrule alojar_habitacion_compatible
+?est <- (estudiante (nombre ?nom) (sexo ?s) (fuma ?f) (alojado no))
+?destino <- (habitacion (numero ?num)
+(plazas-libres ?pl&:(> ?pl 0))
+(capacidad ?c)
+(sexo ?s)
+(fumadores ?f)
+(compañeros $?compañeros))
+=>
+(modify ?est (alojado ?num))
+(modify ?destino (plazas-libres (- ?pl 1)) (compañeros $?compañeros ?nom))
+(printout t "Estudiante " ?nom " alojado en la habitacion " ?num " de capacidad " ?c crlf)
+)
+
+(defrule estudiante_no_alojable
+?est <- (estudiante (nombre ?nom) (sexo ?s) (fuma ?f) (alojado no))
+(not (habitacion (plazas-libres ?pl&:(> ?pl 0))
+(sexo ?s)
+(fumadores ?f)))
+(not (habitacion (capacidad ?c)
+(plazas-libres ?c)))
+=>
+(printout t "No hay sitio para alojar a " ?nom crlf)
+)
+
+---------------------------------Ejercicio21--------------------------------------
+
+(deffacts hechos 
+	(vector 1 2 3 25 4 5 6)
+)
+(defrule eldelmedio
+	(vector $?delante ?x $?detras)
+	(test(= (length$ $?delante)
+		(length$ $?detras)))
+	=>
+	(printout t ?x crlf))
+
+
+
+---------------------------------Ejercicio22--------------------------------------
+
+;regla que compruebe que el primero y el ultimo son iguales y los elimina 
+(defrule veEliminando
+	?dhd<-(datos ?h1 $?a ?h1)
+	=>
+	(retract ?dhd)
+	(assert (datos $?a)))
+;regla que detecta que no es simetrico 
+(defrule nosimetrico
+	(datos ?x $? ?y)
+	(test(neq ?x ?y))
+	=>
+	(printout t "No es simetrico"crlf)
+)
+;regla que imprime simetrico si solo queda un elemento (normalmente funciona bien con reglas diferentes)
+(defrule simetrico1 
+	(or(datos ?)
+	    (datos))
+	=>
+	(printout t "Es simetrico"crlf)
+) 
+
+(deffacts hechos
+	(datos 1 2 3 3 2 1)
+	(datos 1 2 3 4 5 1)
+)
+
+
+---------------------------------Ejercicio23--------------------------------------
+
+(deftemplate producto 
+ (slot nombre) 
+ (slot pvp)) 
+
+;almacena lo productos que quiere un cliente
+(deftemplate compra 
+ (slot productos)
+ (slot unidades)) 
+
+;productos que hay en la tienda
+(deffacts product
+	(producto(nombre pan)(pvp 1))
+	(producto(nombre aceite)(pvp 2))
+	(producto(nombre tomate)(pvp 3))
+)
+
+;producto que el cliente quiere
+(deffacts cliente_compra
+	(compra(productos pan) (unidades 1))
+	(compra(productos aceite)(unidades 2))
+	(compra(productos tomate)(unidades 2))
+)
+(deffacts precio 
+	(precio )
+)
+;tengo que mirar el nombre y el producto que sean igual.
+;cuando tengo el nombre de los productos iguales multiplico el pvp con el numero de unidades. 
+
+(defrule trespordos
+	(producto(nombre ?x)(pvp ?r))
+	(compra(productos ?x)(unidades ?y))
+	;compruebo que el numero de unidades es 2 para darle otra unidad (3x2)
+	(compra(unidades ?y&:(= ?y 2)))
+	=>
+	(assert(..:LISTA DE LA COMPRA:..))
+	(assert(tienes un 3x2 en ?x))
+	(assert(producto: ?x --> precio (* ?y ?r)))
+	)
+
+(defrule compra
+	;de esta forma estoy comparando que el nombre del producto y de la compra sea el mismo 
+	(producto(nombre ?x)(pvp ?r))
+	(compra(productos ?x)(unidades ?y))
+	=>
+	(assert(..:LISTA DE LA COMPRA:..))
+	(assert(producto: ?x --> precio(* ?y ?r))
+	)
+	
+)
+
+---------------------------------Ejercicio25--------------------------------------
+
+
+;Plantilla que define la estructura de cada nodo
+(deftemplate reina
+	(slot id) 		;identificar cada uno de los nodos
+	(slot pid) 		;identificar el padre de cada nodo
+	(slot fila) 		;fila que ocupa 
+	(slot col)		;columna que ocupa
+	(slot depth) 		;profundidad del nodo
+	(multislot ancestros))	;id de todos los ancestros
+
+(deffacts hechosIniciales
+	(nextId 1)
+	(reina (id 0) (depth 0) (fila nil) (col nil) (ancestros 0))
+	(front 0)
+	(pos 1) (pos 2) (pos 3) (pos 4) (pos 5) (pos 6) (pos 7) (pos 8))
+
+;Busca fila y columna que no ataque a la reina padre
+;para generar nuevos ids en la BH tendremos (nextId 1)
+(defrule generaReina
+	(not (reina(depth 8)))
+	?h1 <- (front ?x $?resto)
+	?h2 <- (nextId ?newId)
+	(reina (id ?x) (depth ?profPadre) (ancestros $?ancestros))
+	(pos ?f); son los mismos (fila ?f)
+	(pos ?c); sin los mismos (col ?c)
+	;No atacar a los ancestros de id
+	(not (and (reina (id ?x) (ancestros $? ?ant $?)) 
+			(reina (id ?ant) (fila ?f))));no puede exisitr un ancestro de la reina padre tal que la fila no sea la misma
+	(not (and (reina (id ?x) (ancestros $? ?ant $?)) 
+			(reina (id ?ant) (col ?c))));no puede exisitr un ancestro de la reina padre tal que la columna no sea la misma
+	
+	;faltan las dos diagonales
+	(not (and (reina (id ?x) (ancestros $? ?ant $?)) 
+			(reina (id ?ant&~0) (fila ?f2)(col ?c2&:(= (+ ?f ?c)(+ ?f2 ?c2))))));no puede exisitr un ancestro de la reina padre 											     tal que la columna no sea la misma
+	(not (and (reina (id ?x) (ancestros $? ?ant $?)) 
+			(reina (id ?ant&~0) (fila ?f2)(col ?c2&:(= (- ?f ?c)(- ?f2 ?c2))))))
+	;No repetir nodos
+	(not (reina (pid ?x) (fila ?f) (col ?c)))
+	=>
+	(retract ?h1 ?h2)
+	(assert (reina (id ?newId) (fila ?f) (col ?c) (pid ?x) (depth (+ ?profPadre 1))(ancestros ?newId $?ancestros)))
+	(assert (front ?newId ?x $?resto))
+	(assert (nextId ( + ?newId 1))))
+	
+(defrule eliminaDeFrontera
+	?h1 <- (front ?x $?resto)
+	;Detectar que no se puede generar hijos
+	;cuando todas las posiciones están atacas por los ancestros
+	(reina (id ?x)) ;para saber que generamos hijos desde c
+	(forall  (and (pos ?f) (pos ?c))
+			(or
+				;Ancestro por fila
+				(and (reina (id ?x) (ancestros $? ?ant $?))
+					(reina (id ?ant)(fila ?f)))
+				;Ancestro por columna
+				(and (reina (id ?x) (ancestros $? ?ant $?))
+					(reina (id ?ant) (col ?c)))
+				;Ancestro por diagonal crecientes
+				(and (reina (id ?x) (ancestros $? ?ant $?)) 
+					(reina (id ?ant&~0) (fila ?f2)(col ?c2&:(= (+ ?f ?c)(+ ?f2 ?c2)))))
+				
+				;Ancestros por diagonal decrecientes
+				(and (reina (id ?x) 
+					(ancestros $? ?ant $?)) 
+					(reina (id ?ant&~0) (fila ?f2)(col ?c2&:(= (- ?f ?c)(- ?f2 ?c2)))))
+			
+			(reina (pid ?x) (fila ?f)(col ?c))	
+		)
+	)
+
+	=> 
+	(retract ?h1)
+	(assert (front $?resto)))

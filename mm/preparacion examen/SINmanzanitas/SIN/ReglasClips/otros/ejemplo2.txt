@@ -1,0 +1,13 @@
+(defrule reglaSencilla
+"Regla con variables"
+(colores ?x $?y ?x)
+=>
+(printout t "Se dispara regla para "?x" "$?y" "?x" crlf)
+)
+
+(deffacts constructorBasico
+"Algunos hechos a afirmar"
+(colores rojo amarillo rojo)
+(colores blacno azul verde)
+(colores blanco azul verde blanco)
+)

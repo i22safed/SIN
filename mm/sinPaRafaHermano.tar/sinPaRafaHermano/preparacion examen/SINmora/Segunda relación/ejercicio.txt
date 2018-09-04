@@ -1,0 +1,21 @@
+(defrule reglaDobleYCompara
+"comparo dos numeros, el segundo el doble del primero"
+(dato ?x&: (numberp ?x)
+?y&: (eq ?y (* ?x 2))
+$?w
+?x)
+=>
+(printout t "Se dispara regla para "?x" "?y" "$?w" "?x crlf)
+)
+
+//Con el operador igual en lugar de los dos puntos
+
+(defrule reglaDobleYCompara
+"comparo dos numeros, el segundo el doble del primero"
+(dato ?x&: (numberp ?x)
+= (* ?x 2))
+$?w
+?x)
+=>
+(printout t "Se dispara regla para "?x" "(* ?x 2)" "$?w" "?x crlf)
+)

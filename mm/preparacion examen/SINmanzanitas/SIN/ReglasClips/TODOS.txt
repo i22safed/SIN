@@ -1,0 +1,565 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f0\fs24 \cf0 Ejercicio1:\
+\
+(defrule perro\
+	(sonido guau)\
+	=>\
+	(printout t "Se trata de un perro" crlf)\
+	)\
+\
+(defrule gato\
+	(sonido miau)\
+	=>\
+	(printout t "Se trata de un gato" crlf)\
+	)\
+\
+(defrule pato\
+	(sonido cua)\
+	=>\
+	(printout t "Se trata de un pato" crlf)\
+	)\
+\
+(defrule vaca\
+	(sonido muu)\
+	=>\
+	(printout t "Se trata de un vaca" crlf)\
+	)\
+\
+(defrule obeja\
+	(sonido bee)\
+	=>\
+	(printout t "Se trata de un oveja" crlf)\
+	)\
+\
+\
+(defrule gallo\
+	(sonido kikiriki)\
+	=>\
+	(printout t "Se trata de un gallo" crlf)\
+	)\
+_______________________________________________\
+\
+Ejercicio2:\
+\
+(deftemplate animal\
+	(slot nombre)\
+	(slot sonido)\
+)\
+\
+(deffacts hechos\
+	(animal (nombre perro) (sonido guau))\
+	(animal (nombre pato) (sonido cua))\
+	(animal (nombre oveja) (sonido bee))\
+	(animal (nombre gallo) (sonido kikiriki))\
+	(animal (nombre vaca) (sonido muu))\
+	(animal (nombre gato) (sonido miau))\
+)\
+\
+(defrule reconocerSonido\
+	?h1<-(animal (nombre ?x) (sonido ?y))\
+	(sonido ?y)\
+	=>\
+	(printout t ?y" -> "?x crlf)\
+	(retract ?h1)\
+)\
+_____________________________________________\
+\
+Ejercicio 3:\
+\
+(deffacts hechos\
+	(datos 4 5)\
+	(datos 5 2)\
+	(datos 4 1)\
+	(datos 4 9)\
+)\
+\
+\
+(defrule mayor\
+	?h1<-(datos ?x ?y)\
+	(test(> ?y  ?x))\
+	=>\
+	(printout t "El hecho" ?h1 "cumple que el segundo valor: "?y" es mayor que el primero: " ?x crlf)\
+)\
+	\
+________________________________________\
+\
+Ejercicio 4:\
+\
+(deffacts hechos\
+	(datos 4 5 5 6 8 20)\
+	(datos 5 2 3 5)\
+	(datos 4 1 6 7)\
+	(datos 4 9 5 2)\
+	(datos 2 8 34 2 2)\
+)\
+\
+	\
+\
+(defrule mayor2\
+	?h1<-(datos ?x $?num ?y)\
+	(test(=(mod ?x 2)0))\
+	(or(test(< ?x ?y))\
+		(test(= ?x ?y))\
+	)\
+	=>\
+	(printout t "El hecho " ?h1 "cumple que el primer valor: "?x" es par y menor o igual que el segundo: " ?y crlf)\
+)\
+	\
+______________________________________\
+Ejercicio 5:\
+\
+(deffacts hechos\
+	(datos 1 hola adios 5 6 20)\
+	(datos 2 1 hola 1 1 5 hola adios)\
+)\
+\
+(defrule borrarunos\
+	?h1<-(datos $?ant ?x $?med)\
+	(and (test(integerp ?x))\
+		(test(= ?x 1))\
+	)\
+	=>\
+	(retract ?h1)\
+	(assert(datos $?ant $?med))\
+)\
+______________________________________\
+\
+Ejercicio 6:\
+\
+(deffacts hechos\
+	(vector casas 2 3 5 6 7 4 2)\
+	(vector coches 1 3 4 5 6 1)\
+)\
+\
+\
+(defrule detectar\
+	(vector ?nombre $? ?x $?entre ?y $?)\
+	(and(and	(test(= ?x 3))\
+		(test(= ?y 4))\
+		)\
+		(test(= (mod (length$ $?entre) 2) 1))\
+	)\
+	=>\
+	(printout t "El vector "?nombre" cumple los requisitos" crlf)\
+)\
+______________________________________\
+\
+Ejercicio 7:\
+(deffacts hechos\
+	(datos hola casa 3 4 figrorifico helado 24)\
+)\
+\
+\
+(defrule detectar\
+	?h1<-(datos $?ant ?x $?post)\
+	(test(not(integerp ?x)))\
+	=>\
+	(retract ?h1)\
+	(assert(datos $?ant $?post))\
+)\
+\
+_____________________________________\
+\
+Ejercicio 8:\
+\
+(deffacts hechos\
+	(vector casas 1 2 3 4 5 6 7)\
+	(vector coches 1 2 4 8 6 5)\
+)\
+\
+\
+(defrule detectar\
+	(vector ?nombre $?ant ?x ?y $?post)\
+	(test(> ?x ?y))\
+	(not(comprobado ?))\
+	\
+	=>\
+	(assert (comprobado 1))\
+	(printout t "El vector "?nombre" no est\'e1 ordenado" crlf)\
+)\
+______________________________________\
+\
+Ejercicio 9:\
+\
+(deffacts hechos\
+	(dato 1)\
+	(dato 3)\
+	(dato 10)\
+	(dato 15)\
+	(dato 2)\
+	(dato 5)\
+	(dato 7)\
+)\
+\
+(defrule primero\
+	?h1<-(dato ?x)\
+	(not (todos-los-datos))\
+	=>\
+	(retract ?h1)\
+	(assert(todos-los-datos ?x))\
+)\
+\
+(defrule todos\
+	?h1<-(dato ?x)\
+	?h2<-(todos-los-datos $?num)\
+	=>\
+	(retract ?h1 ?h2)\
+	(assert(todos-los-datos $?num ?x))\
+)\
+\
+_____________________________________\
+\
+Ejercicio 10:\
+\
+(deffacts hechos\
+	(vector casas 3 7 1 5 2)\
+	(vector coches 1 2 4 8 6 5)\
+	(vector sillas 9 1 4 2 5 3)\
+)\
+\
+(defrule ordenar\
+	?h1<-(vector ?nombre $?ant ?x $?med ?y&:(< ?y ?x) $?post)\
+	=>\
+	(retract ?h1)\
+	(assert(vector ?nombre $?ant ?y $?med ?x $?post))\
+)\
+	\
+_____________________________________\
+\
+Ejercicio 11:\
+\
+\
+____________________________________\
+\
+Ejercicio 12:\
+\
+\
+\
+______________________\
+\
+Ejercicio 13:\
+\
+(deffacts hechos\
+	(dato 1)\
+	(dato 3)\
+	(dato 10)\
+	(dato 15)\
+	(dato color)\
+	(dato gato)\
+	(dato 2)\
+	(dato 5)\
+	(dato 7)\
+)\
+\
+(defrule primero\
+	?h1<-(dato ?x)\
+	(not (todos-los-datos))\
+	(test(integerp ?x))\
+	=>\
+	(retract ?h1)\
+	(assert(todos-los-datos ?x))\
+)\
+\
+(defrule todos\
+	?h1<-(dato ?x)\
+	?h2<-(todos-los-datos $?num)\
+	(test(integerp ?x))\
+	=>\
+	(retract ?h1 ?h2)\
+	(assert(todos-los-datos $?num ?x))\
+)\
+\
+__________________\
+Ejercicio 14:\
+
+(deffacts calcular
+  (valor 3) ;Valor a calcular el factorial
+) 
+
+(deffacts Resultado-factorial
+  (resultado 1) ;Para no multiplicar por cero
+) 
+
+(defrule calcular-factorial
+  ?h1 <- (valor ?x&:(> ?x 1))
+  ?h2 <- (resultado ?r)
+  =>
+    (retract ?h1 ?h2)
+    (assert (resultado (* ?x ?r)))
+    (assert (valor (- ?x 1))
+  )
+) 
+
+(defrule mostrar-factorial
+  (valor  ?x&:(= ?x 1))
+  (resultado ?r)
+  =>
+  (printout t "El resultado del factorial es: " ?r crlf))
+
+_________________________________________________\
+\
+Ejercicio 15:\
+\
+(deftemplate sensor\
+	(slot codigo (type INTEGER) (allowed-integers 1 2 3 4 5 6 7 8 9 10))\
+	(slot estado (allowed-values correcto incorrecto))\
+	)\
+	\
+(deffacts sensores\
+	(sensor (codigo 1) (estado correcto))\
+	(sensor (codigo 2) (estado correcto))\
+	(sensor (codigo 3) (estado incorrecto))\
+	(sensor (codigo 4) (estado correcto))\
+	(sensor (codigo 5) (estado incorrecto))\
+	(sensor (codigo 6) (estado correcto))\
+	(sensor (codigo 7) (estado incorrecto))\
+	(sensor (codigo 8) (estado correcto))\
+	(sensor (codigo 9) (estado correcto))\
+	(sensor (codigo 10) (estado correcto)))\
+\
+(defrule detectaError \
+	(exists  ;La regla solo se active una vez\
+		(sensor (codigo ?x) (estado incorrecto))\
+		(sensor (codigo ?y&~?x) (estado incorrecto)) ;Que no sean iguales\
+		(sensor (codigo ?z) (estado incorrecto))\
+		(not (test (= ?x ?z)))\
+		(not (test (= ?y ?z))))\
+	=>\
+	(printout t "ERROR!" crlf))\
+______________________________________________________\
+\
+Ejercicio 16:\
+\
+(deftemplate fecha\
+	(slot dia (type INTEGER))\
+	(slot mes (type INTEGER))\
+	(slot anyo (type INTEGER))\
+	)\
+\
+(deffacts fechas\
+	(fecha (dia 1) (mes 1) (anyo 1))\
+	(fecha (dia 31) (mes 1) (anyo 1))\
+	(fecha (dia 30) (mes 4) (anyo 1))\
+	(fecha (dia 31) (mes 4) (anyo 1)) ;error, no existe 31 abril\
+	(fecha (dia 29) (mes 2) (anyo 2012)) ;29 febrero en a\'d2o bisiesto\
+	(fecha (dia 29) (mes 2) (anyo 2013)) ;29 febrero a\'d2o no bisiesto, error!\
+	)\
+\
+(defrule NoValida\
+	?h1<-(fecha (dia ?d) (mes ?m) (anyo ?a))\
+	(or\
+		(test (< ?a 0))\
+		(test (> ?m 12))\
+		(test (> ?d 31))\
+		(test (< ?m 1))\
+		(test (< ?d 1))\
+		(test (and (> ?d 29) (= ?m 2)))\
+		(test (and (> ?d 30) (or (= ?m 4) (= ?m 6) (= ?m 9) (= ?m 11))))\
+		(test (and (> ?d 28) (= ?m 2) (and (!= (mod ?a 4) 0) (= (mod ?a 400) 0) (or (= (mod ?a 100) 0)))))\
+	)\
+	=>\
+	(retract ?h1)\
+	(printout t \'93No es v\'e1lida la fecha: \'93?d\'94/\'93?m\'94/\'93?a\'94 crlf)\
+)\
+\
+\
+_________________________________________________________\
+\
+Ejercicio 17:\
+\
+(deftemplate plantas\
+	(slot nombre)\
+	(multislot caracteristicas))\
+\
+(deffacts prueba\
+	(planta (nombre adelfa) (caracteristicas ciudad maceta cuidadofacil crecerapido))\
+	(planta (nombre gardenia) (caracteristicas sombra sueloacido maceta))\
+)\
+\
+(deffacts caracteristicas\
+	(caracDeseada sombra)\
+	(caracDeseada maceta)\
+)\
+\
+(defrule buscar\
+	(planta (nombre ?n)\
+	(forall (caracDeseada ?x)\
+		planta (nombre ?n (caracter\'edsticas $? ?x $?)))\
+	=>\
+	(printout t ?n crlf)\
+	)\
+\
+\
+_________________________________________________\
+\
+Ejercicio 18:\
+\
+(deftemplate plantas\
+	(slot nombre)\
+	(multislot caracteristicas))\
+\
+(deffacts prueba\
+	(planta (nombre adelfa) (caracteristicas ciudad maceta cuidadofacil crecerapido))\
+	(planta (nombre gardenia) (caracteristicas sombra sueloacido maceta))\
+)\
+\
+(deffacts caracteristicas\
+	(caracDeseada sombra)\
+	(caracDeseada maceta)\
+)\
+\
+(defrule buscar\
+	(planta (nombre ?n)\
+	(forall (caracDeseada ?x)\
+		(planta (nombre ?n) (caracteristicas $? ?x $?))) ;Todas las caracter\'edsticas deseadas tienen que estar en la planta.\
+	(forall (planta (nombre ?n) (caracteristicas $? ?x $?))\
+		(caracDeseada ?x) ;Todas las caracter\'edsticas de la planta deben ser deseadas.\
+	)\
+	=>\
+	(printout t ?n crlf)\
+	)\
+\
+______________________________________________\
+\
+Ejercicio 20:\
+\
+(deftemplate habitaci\'f3n\
+	(slot id (type INTEGER))\
+	(slot tipo (allowed-values simple doble triple cuadruple))\
+	(slot sexo (allowed-values hombre mujer))\
+	(slot fumadores (allowed-values si no))\
+	(spot ocupantes (default 0))\
+	)\
+\
+(deftemplate estudiante\
+	(slot nombre)\
+	(slot sexo (allowed-values hombre mujer))\
+	(slot fumador (allowed-values si no))\
+	(slot habitacion (default -1) (type INTEGER))\
+	)\
+\
+(deffacts hechos\
+	(habitacion (id 1) (tipo simple))\
+	(habitacion (id 2) (tipo cuadruple))\
+	(habitacion (id 3) (tipo doble))\
+	(habitacion (id 4) (tipo triple))\
+	(habitacion (id 5) (tipo doble))\
+	(habitacion (id 6) (tipo cuadruple))\
+	(estudiante (nombre juan) (sexo hombre) (fumador no))\
+	(estudiante (nombre juan2) (sexo hombre) (fumador si))\
+	(estudiante (nombre juan3) (sexo hombre) (fumador no))\
+	(estudiante (nombre juan4) (sexo hombre) (fumador si))\
+	(estudiante (nombre ana) (sexo mujer) (fumador no))\
+	(estudiante (nombre ana1) (sexo mujer) (fumador si))\
+	(estudiante (nombre ana2) (sexo mujer) (fumador no))\
+	(estudiante (nombre ana3) (sexo mujer) (fumador si))\
+	(estudiante (nombre ana4) (sexo mujer) (fumador no))\
+	(estudiante (nombre ana5) (sexo mujer) (fumador no))\
+	)\
+\
+(defrule Habitacion4\
+	?h1<- (estudiante (nombre ?n) (sexo ?s) (fumados ?f) (habitacion -1))\
+	?h2<- (habitaci\'f3n (id ?1) (tipo cu\'e1druple) (fumadores ?f4$:(or (es ?f4 ?f) (eq ?f4 null))) (sexo ?s4&:(or (eq ?s4 ?s) (eq ?s4 null))) (ocupantes ?o)\
+	(test (< ?o 4))\
+	=>\
+	(retract ?h1 ?h2)\
+	(assert (estudiante (nombre ?n) (sexo ?s (fumados ?f) (habitacion ?i)))\
+	(assert (habitation (id ?i) (tipo cu\'e1druple) (fumadores ?f) (sexo ?s) (ocupantes (+ ?o 1))))\
+	)\
+\
+(defrule Habitacion3\
+	?h1<-(estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion -1))\
+	(not (habitacion (id ?i) (tipo cuadruple) (fumadores ?f4&:(or (eq ?f4 ?f) (eq ?f4 null))) (sexo ?s4&:(or (eq ?s4 ?s) (eq ?s4 null))) (ocupantes ?o4&:(< ?o4 4))))\
+	?h2<-(habitacion (id ?i) (tipo triple) (fumadores ?f3&:(or (eq ?f3 ?f) (eq ?f3 null))) (sexo ?s3&:(or (eq ?s3 ?s) (eq ?s3 null))) (ocupantes ?o))\
+	(test (< ?o 3))\
+	=>\
+	(retract ?h1 ?h2)\
+	(assert (estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion ?i)))\
+	(assert (habitacion (id ?i) (tipo triple) (fumadores ?f) (sexo ?s) (ocupantes (+ ?o 1))))\
+)\
+\
+(defrule Habitacion2\
+	?h1<-(estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion -1))\
+	(not (habitacion (id ?i) (tipo cuadruple) (fumadores ?f4&:(or (eq ?f4 ?f) (eq ?f4 null))) (sexo ?s4&:(or (eq ?s4 ?s) (eq ?s4 null))) (ocupantes ?o4&:(< ?o4 4))))\
+	(not (habitacion (id ?i) (tipo triple) (fumadores ?f3&:(or (eq ?f3 ?f) (eq ?f3 null))) (sexo ?s3&:(or (eq ?s3 ?s) (eq ?s3 null))) (ocupantes ?o3&:(< ?o3 3))))\
+	?h2<-(habitacion (id ?i) (tipo doble) (fumadores ?f2&:(or (eq ?f2 ?f) (eq ?f2 null))) (sexo ?s2&:(or (eq ?s2 ?s) (eq ?s2 null))) (ocupantes ?o))\
+	(test (< ?o 2))\
+	=>\
+	(retract ?h1 ?h2)\
+	(assert (estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion ?i)))\
+	(assert (habitacion (id ?i) (tipo doble) (fumadores ?f) (sexo ?s) (ocupantes (+ ?o 1))))\
+)\
+(defrule Habitacion1\
+	?h1<-(estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion -1))\
+	(not (habitacion (id ?i) (tipo cuadruple) (fumadores ?f4&:(or (eq ?f4 ?f) (eq ?f4 null))) (sexo ?s4&:(or (eq ?s4 ?s) (eq ?s4 null))) (ocupantes ?o4&:(< ?o4 4))))\
+	(not (habitacion (id ?i) (tipo triple) (fumadores ?f3&:(or (eq ?f3 ?f) (eq ?f3 null))) (sexo ?s3&:(or (eq ?s3 ?s) (eq ?s3 null))) (ocupantes ?o3&:(< ?o3 3))))\
+	(not (habitacion (id ?i) (tipo doble) (fumadores ?f2&:(or (eq ?f2 ?f) (eq ?f2 null))) (sexo ?s2&:(or (eq ?s2 ?s) (eq ?s2 null))) (ocupantes ?o2&:(< ?o2 2))))\
+	?h2<-(habitacion (id ?i) (tipo simple) (fumadores ?f1&:(or (eq ?f1 ?f) (eq ?f1 null))) (sexo ?s1&:(or (eq ?s1 ?s) (eq ?s1 null))) (ocupantes ?o))\
+	(test (< ?o 1))\
+	=>\
+	(retract ?h1 ?h2)\
+	(assert (estudiante (nombre ?n) (sexo ?s) (fumador ?f) (habitacion ?i)))\
+	(assert (habitacion (id ?i) (tipo simple) (fumadores ?f) (sexo ?s) (ocupantes (+ ?o 1))))\
+)\
+\
+________________________________________________\
+\
+Ejercicio 23:\
+\
+(deftemplate producto\
+	(slot nombre)\
+	(slot pvp))\
+\
+(deftemplate compra\
+	(slot producto)\
+	(slot unidades))\
+\
+(deftemplate lista\
+	(slot productos (default 0))\
+	(slot cuenta (default 0))\
+)\
+\
+(deffacts hechos\
+	(producto (nombre a) (pvp 2))\
+	(compra (producto a) (unidades 6))\
+	)\
+\
+(defrule importeSin ;sin 3x2\
+	?h1<-(producto (nombre ?n) (pvp ?p))\
+	?h2<-(compra (producto ?n) (unidades ?u&:(> (mod ?u 3) 0)))\
+	?h3<-(lista (productos ?pr) (cuenta ?c))\
+	=>\
+	(retract ?h1 ?h2 ?h3)\
+	(assert (lista (productos (+ ?pr 1)) (cuenta (+ ?c (* ?p ?u)))))\
+	)\
+	\
+(defrule importeCon ;con 3x2\
+	?h1<-(producto (nombre ?n) (pvp ?p))\
+	?h2<-(compra (producto ?n) (unidades ?u&:(= (mod ?u 3) 0)))\
+	?h3<-(lista (productos ?pr) (cuenta ?c))\
+	=>\
+	(retract ?h1 ?h2 ?h3)\
+	(assert (lista (productos (+ ?pr 1)) (cuenta (+ ?c (* ?p (- ?u (/ ?u 3)))))))  ;calcula el descuento restando las unidades "gratis" con el 3x2\
+	)\
+	\
+(defrule mostrarcuenta\
+	?h1<-(lista (productos ?p) (cuenta ?c))\
+	(forall (producto (nombre ?n))\
+			(compra (producto ?pr&:(neq ?n ?pr)))\
+	)\
+	=>\
+	(printout t "Se han comprado " ?p " productos y la cuenta total es: " ?c " euros." crlf)\
+	)\
+\
+\
+_____________________________\
+\
+\
+\
+\
+}

@@ -1,0 +1,106 @@
+
+
+Elemento Condicional (EC) Patrón 
+
+
+· EC or 
+
+	El EC or se satisface si se satisface cualquiera de los EC que lo 
+	componen.
+	Si se satisfacen varios ECs del EC or 
+
+
+	Ejemplo 1
+
+		(defrule posibles-tostadas 
+
+		(tengo pan)
+		(or (tengo mantequilla)
+			(tengo aceite))
+
+		=>
+
+		(assert (desayuno tostadas)))
+
+
+
+· EC and 
+
+	El EC and si se satisface si se satisfacen todos los EC que lo componen
+	El EC and permite mezclar ECs and y or en el antecedente 
+
+	<EC-and> ::= (and <elemento-condicionante>) 
+
+
+	Ejemplo 2
+
+	(defrule posibles-desayunos
+
+		(tengo zumo-naturla)
+		(or (and (tengo pan)
+				(tengo aceite))
+				(and (tengo leche)
+				(tengo cereales))
+
+		=>
+
+		(assert desayuno tostadas)))
+
+
+	Ejemplo 3 
+
+
+	(defrule Homer-loco 
+		(not (hay tele)) 
+		(not (hay cerveza)) 
+
+			=> 
+
+		(assert (Homer pierde la cabeza))
+
+	)
+
+
+
+	Ejemplo 4 (Buen ejemplo para ordenar numeros o para seleccionar el mayor)
+
+	(defrule numero-mayor
+
+		(numero ?x)
+
+		(not (numero ?y&:(> ?y ?x)))
+
+		=>
+
+		(printout t ?x "Es el mayor numero" crlf) 
+
+	)
+
+
+	- Las variables asociadas a un not son locales a ese not.
+
+
+· EC not y la propiedad de refracción
+
+(defrule tenis 
+(not (tiempo lluvioso))) ... 
+
+
+· EC exists 
+
+(defrule tostadas_mermelada
+(tengo pan)
+(tengo mermelada ?))
+
+	=>
+
+(printout t "Desayuno tostadas con mermelada." crlf))
+
+
+Subir con una descripción del ejercicio y demases de los ejercicios de moodle
+
+
+
+
+
+
