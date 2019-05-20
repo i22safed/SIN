@@ -1,9 +1,17 @@
-;
-;      primera version del programa Jarras de Agua
-;      búsqueda primero en anchura
-;         
 
-(deftemplate estado
+
+
+; Definicion de modulos ------------------------------
+
+(defmodule MAIN
+	(export ?ALL)
+)
+
+(deftemplate MAIN::flag 
+	(slot value (type INTEGER)(allowed-values 1)(default 1))
+) 
+
+(deftemplate MAIN::estado
       (slot j3
             (type INTEGER)
             (default 0))
@@ -24,13 +32,78 @@
 )
 
 
-;**************************************************************
-;
-;	regla inicial
-;
-;**************************************************************
+(defmodule ANCHURA 
+	(export ?ALL)
+	(import MAIN deftemplate flag)
+	(import MAIN deftemplate estado)
 
-(defrule inicial
+)
+(defmodule PROFUNDIDAD 
+	(export ?ALL)
+	(import MAIN deftemplate flag)
+	(import MAIN deftemplate estado)
+)
+
+; Definicion de plantillas ---------------------------
+
+(deftemplate opcion 
+	(slot op (type INTEGER)(allowed-values 1 2))
+)
+
+
+; Definicion de reglas -------------------------------
+
+(defrule MAIN::elegir
+
+	(declare (salience 1000))
+
+=>
+	(printout t crlf "Problema de las Jarras de Agua" crlf)
+	(printout t crlf "Resolver mediante: " crlf)
+	(printout t crlf "  1. Anchura " crlf)
+	(printout t "  2. Profundidad " crlf)
+	(printout t crlf " Opci�n: " ) 
+	(assert (op (read)))
+)
+
+
+
+(defrule MAIN::seleccionaA  
+	(op 1)
+	=> 
+	(printout t " Elegido el modulo A" crlf)
+	(assert (flag (value 1)))
+  	(focus ANCHURA)
+)
+  
+
+(defrule MAIN::seleccionaB  	
+	(op 2)
+	=> 
+	(printout t " Elegido el modulo B" crlf)
+	(focus PROFUNDIDAD)
+)
+  
+(defrule MAIN::errorSeleccion
+	(not (or(op 1)(op 2)))
+	=>
+	(printout t " Error al elegir m�todo ... saliendo" crlf)
+)
+
+
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+
+
+
+(defrule ANCHURA::inicial
       ?x <- (initial-fact)
 =>
       (assert (estado (j3 0) (j4 0) (padre sin-padre) (nivel 0) (s-estado "[0:0]")))
@@ -345,3 +418,14 @@
 =>
       (printout t "Numero estados distintos: " (- ?cuenta  1) crlf)
 )
+
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+
