@@ -1,21 +1,74 @@
-﻿;2.- Haz un programa que dado un conjunto de hechos de tipo datos
-;    con un número indefinido de valores, detecte e imprima
+; 2.- Haz un programa que dado un conjunto de hechos de tipo datos
+;    con un numero indefinido de valores, detecte e imprima
 ;    aquellos tal que el primer valor sea par y menor o igual
-;    al último.
+;    al ultimo.
 ;===================================================================
-;3.- Haz un programa que dado un único hecho datos con un número
+
+(deffacts hechos 
+	(datos 3 5 6 7 2 5)
+	(datos 5 5 10 7 30 1 2 8 2 5)
+	(datos 10 20 7 50)
+)
+
+(defrule parmenorigual
+
+	(datos ?primero&:(evenp ?primero) $?medio ?ultimo&:(<= ?primero ?ultimo))		
+=>
+	(printout t "El hecho que cumple la condicion es:" ?primero " " $?medio " " ?ultimo crlf)		
+)
+
+;===================================================================
+; 3.- Haz un programa que dado un unico hecho datos con un numero
 ;    indefinido de valores (ejemplo: (datos hola 1 3 nuevo 1 adios)),
 ;    elimine todas las apariciones del valor 1.
 ;===================================================================
+
+(deffacts hecho 
+	(datos hola 1 3 nuevo 1 adios)
+) 
+
+(defrule eliminar-unos 
+
+	?h1<-(datos $?principio 1 $?final)	; Buscamos los 1's en el hecho
+=>
+	(retract ?h1)				; Retractamos el hecho  
+	(assert (datos $?principio $?final))	; Para poder afirmarlo con el 1  
+)
+
+;===================================================================
 ;4.- Haz un programa que detecte e imprima los hechos
 ;   (vector <nombreVector> ...) que contengan los
-;    valores 3 y 4 en alguna posici�n, y que entre �stos
+;    valores 3 y 4 en alguna posicion, y que entre estos
 ;    haya un numero impar de valores. Se debe utilizar la
-;    funci�n length$ (ver documentaci�n).
+;    funcion length$ (ver documentacion).
 ;    ver https://www.csie.ntu.edu.tw/~sylee/courses/clips/rhs.htm
 ;===================================================================
+
+(deffacts hechos 
+	(vector v1 1 2 4 5 6)
+	(vector v2 6 3 5 4 2 1 0)
+	(vector v3 10 8 3 7 4 9 2)
+)
+
+(defrule detecta-vector
+	(vector ?nombre $?principio 3 $?medio&:(oddp (length$ $?medio)) 4 $?final)
+=> 
+	(printout t "El vector que cumple la condicion es: " ?nombre crlf)
+)
+
+
+
+
+;===================================================================
 ;5.- Haz un programa que dado un �nico hecho datos con un n�mero
-;    indefinido de valores, elimine los que no sean num�ricos.
+;    indefinido de valores, elimine los que no sean numericos.
+;===================================================================
+
+
+
+
+
+
 ;===================================================================
 ;	6.	Haz un programa que dado un conjunto de hechos
 ;(vector <nombreVector> <val1> ... <valN>), detecte aquellos
